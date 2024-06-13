@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Response } from 'express';
 import v1Router from './routes/v1';
 import morgan from 'morgan';
 import cors from 'cors';
@@ -12,12 +12,7 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
-  req.big_secret = 'big secret';
-  next();
-});
-
-app.get('/', (req: any, res) => {
+app.get('/', (_, res: Response) => {
   res.status(200);
   res.json('Hello world!');
 });
