@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum TargetType {
+  CHARACTER
+  ORGANIZATION
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  ELITE
+}
+
+model User {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  role      Role     @default(USER)
+  username  String   @unique
+  password  String
+}
+
+model Character {
+  id            Int                 @id @default(autoincrement())
+  name          String
+  knownAliases  String[]
+  imageUrl      String
+  bio           String
+  skillLevel    SkillLevel
+  hacksAsPerp   PerpetratorOnHack[]
+  hacksAsTarget Hack[]
+  quotes        Quote[]
+}
+
+model Organization {
+  id          Int    @id @default(autoincrement())
+  name        String
+  description String
+  imageUrl    String
+  hacks       Hack[]
+}
+
+model Hack {
+  id                Int                 @id @default(autoincrement())
+  title             String
+  description       String
+  targetId          Int
+  targetType        TargetType
+  perpetrators      PerpetratorOnHack[]
+  targetedCharacter Character?          @relation(fields: [targetId], references: [id], map: "Hack_targetId_Character_fkey")
+  targetedOrg       Organization?       @relation(fields: [targetId], references: [id], map: "Hack_targetId_Organization_fkey")
+}
+
+model PerpetratorOnHack {
+  hackId      Int
+  characterId Int
+  hack        Hack      @relation(fields: [hackId], references: [id])
+  character   Character @relation(fields: [characterId], references: [id])
+
+  @@id([hackId, characterId])
+}
+
+model Quote {
+  id          Int       @id @default(autoincrement())
+  quote       String
+  character   Character @relation(fields: [characterId], references: [id])
+  characterId Int
+}
