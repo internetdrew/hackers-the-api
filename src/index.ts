@@ -1,5 +1,10 @@
 import * as dotenv from 'dotenv';
-dotenv.config();
+
+export const processEnv: { [key: string]: any } = {};
+// for (const key in process.env) {
+//   processEnv[key] = process.env[key];
+// }
+dotenv.config({ processEnv });
 
 import app from './server';
 

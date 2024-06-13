@@ -1,28 +1,41 @@
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import { Request, Response, NextFunction } from 'express';
+import { processEnv } from '..';
 
-export const comparePasswords = (password, hashedPassword) => {
+interface User {
+  id: string;
+  username: string;
+}
+
+export interface AuthedRequest extends Request {
+  user: string | JwtPayload;
+}
+
+export const comparePasswords = (password: string, hashedPassword: string) => {
   return bcrypt.compare(password, hashedPassword);
 };
 
-export const hashPassword = password => {
+export const hashPassword = (password: string) => {
   return bcrypt.hash(password, 10);
 };
 
-export const createJWT = user => {
-  const token = jwt.sign(
-    { id: user.id, username: user.username },
-    process.env.JWT_SECRET
-  );
+export const createJWT = (user: User) => {
+  const privateKey = processEnv.JWT_SECRET;
+  const token = jwt.sign({ id: user.id, username: user.username }, privateKey);
   return token;
 };
 
-export const protect = async (req, res, next) => {
+export const protect = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const bearer = req.headers.authorization;
 
   if (!bearer) {
     res.status(401);
-    res.json({ message: 'Sike. You are unauthorized!' });
+    res.json({ message: 'Unauthorized!' });
     return;
   }
 
@@ -34,11 +47,10 @@ export const protect = async (req, res, next) => {
   }
 
   try {
-    const user = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = user;
+    const user = jwt.verify(token, processEnv.JWT_SECRET);
+    (req as AuthedRequest).user = user;
     next();
   } catch (e) {
-    console.log(e);
     res.status(401);
     res.json({ message: 'Invalid token.' });
     return;
