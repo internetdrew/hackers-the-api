@@ -1,8 +1,8 @@
 import express, { Response } from 'express';
-import v1Router from './routes/v1';
+import { adminRouter, v1Router } from './routes/v1';
 import morgan from 'morgan';
 import cors from 'cors';
-import { protect } from './modules/auth';
+import { isAdmin, protect } from './modules/auth';
 import { createUser, login } from './handlers/user';
 import { handleInputErrors, validateUserInputs } from './modules/middleware';
 
@@ -19,6 +19,7 @@ app.get('/', (_, res: Response) => {
 });
 
 app.use('/api/v1', protect, v1Router);
+app.use('/api/v1/admin', protect, isAdmin, adminRouter);
 
 app.post('/user', validateUserInputs, handleInputErrors, createUser);
 app.post('/login', validateUserInputs, handleInputErrors, login);

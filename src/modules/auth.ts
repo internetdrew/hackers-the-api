@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { Request, Response, NextFunction } from 'express';
 import { processEnv } from '..';
 import { User } from '@prisma/client';
+import prisma from '../db';
 
 export interface AuthedRequest extends Request {
   user: string | JwtPayload;
@@ -53,4 +54,29 @@ export const protect = async (
     res.json({ message: 'Invalid token.' });
     return;
   }
+};
+
+export const isAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userDataOnRequest = (req as AuthedRequest).user;
+
+  if (typeof userDataOnRequest === 'string') {
+    res.status(401);
+    res.json({ message: 'Not authorized.' });
+    return;
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: userDataOnRequest.id },
+  });
+
+  if (user?.role !== 'ADMIN') {
+    res.status(401);
+    res.json({ message: 'Not authorized.' });
+    return;
+  }
+  next();
 };
