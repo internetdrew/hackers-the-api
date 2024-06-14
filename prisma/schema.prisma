@@ -45,18 +45,16 @@ model Character {
 }
 
 model Organization {
-  id           Int      @id @default(autoincrement())
-  name         String   @db.VarChar(255)
-  knownAliases String[]
-  description  String
-  imageUrl     String
-  hacks        Hack[]
+  id              Int    @id @default(autoincrement())
+  name            String @db.VarChar(255)
+  description     String
+  imageUrl        String
+  hacksTargetedBy Hack[]
 }
 
 model Hack {
   id                   Int            @id @default(autoincrement())
   title                String         @db.VarChar(255)
-  knownAliases         String[]
   description          String
   targetId             Int
   targetType           TargetType
@@ -76,7 +74,7 @@ model HackerOnHack {
 
 model Quote {
   id          Int       @id @default(autoincrement())
-  quote       String
+  text        String
   character   Character @relation(fields: [characterId], references: [id])
   characterId Int
 }

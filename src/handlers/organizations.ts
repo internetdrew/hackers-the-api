@@ -1,5 +1,3 @@
-// add functions to get all organizations and get organization by id
-
 import { Request, Response } from 'express';
 import prisma from '../db';
 
