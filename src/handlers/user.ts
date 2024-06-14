@@ -3,6 +3,17 @@ import { comparePasswords, createJWT, hashPassword } from '../modules/auth';
 import prisma from '../db';
 
 export const createUser = async (req: Request, res: Response) => {
+  const userAlreadyExists = await prisma.user.findUnique({
+    where: {
+      username: req.body.username,
+    },
+  });
+  if (userAlreadyExists) {
+    res.status(400);
+    res.json({ message: 'User already exists.' });
+    return;
+  }
+
   const user = await prisma.user.create({
     data: {
       username: req.body.username,
@@ -23,12 +34,12 @@ export const login = async (req: Request, res: Response) => {
 
   const valid = await comparePasswords(req.body.password, user!.password);
 
-  if (!valid) {
+  if (!user || !valid) {
     res.status(401);
     res.json({ message: 'Invalid credentials.' });
     return;
   }
 
-  const token = createJWT(user!);
+  const token = createJWT(user);
   res.json({ token });
 };

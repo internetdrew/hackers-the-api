@@ -2,11 +2,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { Request, Response, NextFunction } from 'express';
 import { processEnv } from '..';
-
-interface User {
-  id: string;
-  username: string;
-}
+import { User } from '@prisma/client';
 
 export interface AuthedRequest extends Request {
   user: string | JwtPayload;
@@ -21,8 +17,10 @@ export const hashPassword = (password: string) => {
 };
 
 export const createJWT = (user: User) => {
-  const privateKey = processEnv.JWT_SECRET;
-  const token = jwt.sign({ id: user.id, username: user.username }, privateKey);
+  const token = jwt.sign(
+    { id: user.id, username: user.username },
+    processEnv.JWT_SECRET
+  );
   return token;
 };
 

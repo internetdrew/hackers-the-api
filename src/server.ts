@@ -4,6 +4,7 @@ import morgan from 'morgan';
 import cors from 'cors';
 import { protect } from './modules/auth';
 import { createUser, login } from './handlers/user';
+import { handleInputErrors, validateUserInputs } from './modules/middleware';
 
 const app = express();
 
@@ -19,7 +20,7 @@ app.get('/', (_, res: Response) => {
 
 app.use('/api/v1', protect, v1Router);
 
-app.post('/user', createUser);
-app.post('/login', login);
+app.post('/user', validateUserInputs, handleInputErrors, createUser);
+app.post('/login', validateUserInputs, handleInputErrors, login);
 
 export default app;

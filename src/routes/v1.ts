@@ -1,15 +1,22 @@
 import { Router } from 'express';
+import prisma from '../db';
 
 const v1Router = Router();
 
-/*
-Characters
-*/
-v1Router.get('/characters', (req, res) => {
+v1Router.get('/characters', (_, res) => {
+  const characters = prisma.character.findMany();
   res.json({
-    message: 'yeah baby!',
-    data: 'baby is in the corner',
+    characters,
   });
+});
+
+v1Router.get('/characters/:id', async (req, res) => {
+  const character = await prisma.character.findUnique({
+    where: {
+      id: parseInt(req.params?.id),
+    },
+  });
+  return res.json({ character });
 });
 
 export default v1Router;

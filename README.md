@@ -1,4 +1,4 @@
-# Hackers-The-API
+# Hackers, The API
 
 This is a Node.js API built with Express.js and Prisma. It uses JWT for authentication and bcrypt for password hashing.
 
