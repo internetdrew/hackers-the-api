@@ -5,6 +5,8 @@ This is a Node.js API built with Express.js and Prisma. It uses JWT for authenti
 ## Table of Contents
 
 - [Getting Started](#getting-started)
+- [Prerequisites](#prerequisites)
+- [Installation](#installing)
 
 ## Getting Started
 
