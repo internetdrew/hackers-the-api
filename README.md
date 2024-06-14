@@ -16,7 +16,7 @@ These instructions will get you a copy of the project up and running on your loc
 1. Clone the repository
 
 ```sh
-git clone https://github.com/yourusername/hackers-the-api.git
+git clone https://github.com/internetdrew/hackers-the-api.git
 ```
 
 2. Install NPM packages
