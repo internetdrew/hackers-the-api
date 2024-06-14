@@ -2,6 +2,10 @@
 
 This is a Node.js API built with Express.js and Prisma. It uses JWT for authentication and bcrypt for password hashing.
 
+## Table of Contents
+
+- [Getting Started](#getting-started)
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
