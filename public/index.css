@@ -1,6 +1,7 @@
 :root {
   --dark: #0c0f0a;
   --light: #adb5bd;
+  --green: #40916c;
 }
 * {
   margin: 0;
@@ -22,17 +23,7 @@ code {
   box-decoration-break: clone;
   padding: 0.25rem;
   border-radius: 5px;
-  color: #40916c;
-}
-
-.navigation {
-  padding: 0.5rem 1rem;
-}
-@media only screen and (min-width: 992px) {
-  .navigation {
-    padding: 1rem 2rem;
-    font-size: 1rem;
-  }
+  color: var(--green);
 }
 
 .title-container {
@@ -42,7 +33,7 @@ code {
 .title {
   font-size: 1rem;
   margin-top: 2rem;
-  color: #40916c;
+  color: var(--green);
 }
 
 @media only screen and (min-width: 992px) {
