@@ -23,11 +23,10 @@ import {
 const v1Router = Router();
 const adminRouter = Router();
 
-/* Characters */
 v1Router.get('/characters', getAllCharacters);
 v1Router.get('/characters/:id', getCharacterById);
 v1Router.get('/characters/:id/quotes', getCharacterQuotes);
-/* Characters admin routes */
+
 adminRouter.post(
   '/characters',
   validateCharacterCreationInputs,

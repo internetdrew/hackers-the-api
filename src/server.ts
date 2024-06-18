@@ -4,7 +4,11 @@ import morgan from 'morgan';
 import cors from 'cors';
 import { isAdmin, protect } from './modules/auth';
 import { createUser, login } from './handlers/user';
-import { handleInputErrors, validateUserInputs } from './modules/middleware';
+import {
+  apiLimiter,
+  handleInputErrors,
+  validateUserInputs,
+} from './modules/middleware';
 
 const app = express();
 
@@ -18,7 +22,7 @@ app.get('/', (_, res: Response) => {
   res.json('Hello world!');
 });
 
-app.use('/api/v1', protect, v1Router);
+app.use('/api/v1', protect, apiLimiter, v1Router);
 app.use('/api/v1/admin', protect, isAdmin, adminRouter);
 
 app.post('/user', validateUserInputs, handleInputErrors, createUser);

@@ -1,6 +1,7 @@
 import { SkillLevel } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
-import { body, oneOf, validationResult } from 'express-validator';
+import rateLimit from 'express-rate-limit';
+import { body, validationResult } from 'express-validator';
 
 export const validateUserInputs = [
   body('username').trim().notEmpty().isString().escape(),
@@ -34,3 +35,9 @@ export const handleInputErrors = (
   }
   next();
 };
+
+export const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: 'Too many requests from this IP, please try again after 15 minutes.',
+});
