@@ -8,21 +8,21 @@
   </head>
 
   <body>
-    <nav class="navigation">
+    <!-- <nav class="navigation">
       <strong> Hackers, The Unofficial Movie API </strong>
-    </nav>
+    </nav> -->
     <div class="title-container">
-      <h1 class="title">Welcome to Hackers, The Unofficial Movie API</h1>
+      <h1 class="title">Hackers, The Unofficial Movie API</h1>
       <p class="subtitle">
-        Based on the 1995 movie Hackers, including characters, organizations,
-        and quotes.
+        An API based on the 1995 movie Hackers. Get information on characters,
+        organizations, quotes, and more.
       </p>
     </div>
 
     <main class="main-container">
       <section>
         <h2 class="section-header">API Endpoints</h2>
-        <h3>Characters</h3>
+        <h3 class="category-title">Characters</h3>
         <ul class="apiOptions">
           <li>
             <code>GET /api/v1/characters</code>: Returns a list of characters.
@@ -37,7 +37,7 @@
           </li>
         </ul>
 
-        <h3>Organizations</h3>
+        <h3 class="category-title">Organizations</h3>
         <ul class="apiOptions">
           <li>
             <code>GET /api/v1/organizations</code>: Returns a list of prominant
@@ -49,7 +49,7 @@
           </li>
         </ul>
 
-        <h3>Hacks</h3>
+        <h3 class="category-title">Hacks</h3>
         <ul class="apiOptions">
           <li>
             <code>GET /api/v1/hacks</code>: Returns a list of hacks executed in
@@ -61,7 +61,7 @@
           </li>
         </ul>
 
-        <h3>Quotes</h3>
+        <h3 class="category-title">Quotes</h3>
         <ul class="apiOptions">
           <li>
             <code>GET /api/v1/quotes</code>: Returns a list of famous quotes.
@@ -74,6 +74,17 @@
       </section>
       <section>
         <h2 class="section-header">Create an account</h2>
+        <form class="signup-form">
+          <div class="form-control">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required />
+          </div>
+          <div class="form-control">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required />
+          </div>
+          <button class="submit-btn">Create Account</button>
+        </form>
       </section>
     </main>
   </body>

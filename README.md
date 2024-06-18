@@ -1,6 +1,6 @@
 # Hackers, The Unofficial Movie API
 
-An API inspired by and based on the the movie Hackers.
+An API based on the 1995 movie Hackers. Get information on characters, organizations, quotes, and more.
 
 ## Table of Contents
 
