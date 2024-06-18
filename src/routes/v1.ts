@@ -14,11 +14,13 @@ import {
   getHackById,
   getHackHackers,
   getHackTarget,
+  getHackerHacks,
 } from '../handlers/hacks';
 import {
   handleInputErrors,
   validateCharacterCreationInputs,
 } from '../modules/middleware';
+import { getAllQuotes, getQuoteById } from '../handlers/quotes';
 
 const v1Router = Router();
 const adminRouter = Router();
@@ -26,6 +28,18 @@ const adminRouter = Router();
 v1Router.get('/characters', getAllCharacters);
 v1Router.get('/characters/:id', getCharacterById);
 v1Router.get('/characters/:id/quotes', getCharacterQuotes);
+
+v1Router.get('/organizations', getAllOrganizations);
+v1Router.get('/organizations/:id', getOrganizationById);
+
+v1Router.get('/hacks', getAllHacks);
+v1Router.get('/hacks/:id', getHackById);
+v1Router.get('/hacks/:id/target', getHackTarget);
+v1Router.get('/hacks/:id/hacker', getHackHackers);
+v1Router.get('/hacks/hacker/:id', getHackerHacks);
+
+v1Router.get('/quotes', getAllQuotes);
+v1Router.get('/quotes/:id', getQuoteById);
 
 adminRouter.post(
   '/characters',
@@ -35,15 +49,5 @@ adminRouter.post(
 );
 // adminRouter.put('/characters/:id', updateCharacter);
 // adminRouter.delete('/characters/:id', deleteCharacter);
-
-/* Organizations */
-v1Router.get('/organizations', getAllOrganizations);
-v1Router.get('/organizations/:id', getOrganizationById);
-
-/* Hacks */
-v1Router.get('/hacks', getAllHacks);
-v1Router.get('/hacks/:id', getHackById);
-v1Router.get('/hacks/:id/target', getHackTarget);
-v1Router.get('/hacks/:id/hacker', getHackHackers);
 
 export { v1Router, adminRouter };

@@ -53,3 +53,16 @@ export const getHackHackers = async (req: Request, res: Response) => {
 
   return res.json({ data: hack?.associatedHackers });
 };
+
+export const getHackerHacks = async (req: Request, res: Response) => {
+  const hacker = await prisma.character.findUnique({
+    where: {
+      id: parseInt(req.params?.id),
+    },
+    include: {
+      hacksAsHacker: true,
+    },
+  });
+
+  return res.json({ data: hacker?.hacksAsHacker });
+};

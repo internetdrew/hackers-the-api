@@ -4,18 +4,77 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hackers, The Unofficial Movie API</title>
+    <link rel="stylesheet" href="./index.css" />
   </head>
+
   <body>
-    <nav>Hackers, The Unofficial Movie API</nav>
-    <main>
-      <h1>Welcome to Hackers, The Unofficial Movie API</h1>
-      <p>
-        This API provides information about the 1995 movie Hackers. It includes
-        data about the movie's characters, actors, and quotes.
+    <nav class="navigation">
+      <strong> Hackers, The Unofficial Movie API </strong>
+    </nav>
+    <div class="title-container">
+      <h1 class="title">Welcome to Hackers, The Unofficial Movie API</h1>
+      <p class="subtitle">
+        Based on the 1995 movie Hackers, including characters, organizations,
+        and quotes.
       </p>
-      <p>
-        To get started, visit the <a href="/characters">characters</a> endpoint
-        to see a list of characters in the movie.
-      </p>
+    </div>
+
+    <main class="main-container">
+      <section>
+        <h2 class="section-header">API Endpoints</h2>
+        <h3>Characters</h3>
+        <ul class="apiOptions">
+          <li>
+            <code>GET /api/v1/characters</code>: Returns a list of characters.
+          </li>
+          <li>
+            <code>GET /api/v1/characters/{id}</code>: Returns specific character
+            details.
+          </li>
+          <li>
+            <code>GET /api/v1/characters/:id/quotes</code>: Returns character
+            quotes.
+          </li>
+        </ul>
+
+        <h3>Organizations</h3>
+        <ul class="apiOptions">
+          <li>
+            <code>GET /api/v1/organizations</code>: Returns a list of prominant
+            organizations in the movie.
+          </li>
+          <li>
+            <code>GET /api/v1/organizations/{id}</code>: Returns details about a
+            specific organization.
+          </li>
+        </ul>
+
+        <h3>Hacks</h3>
+        <ul class="apiOptions">
+          <li>
+            <code>GET /api/v1/hacks</code>: Returns a list of hacks executed in
+            the movie.
+          </li>
+          <li>
+            <code>GET /api/v1/organizations/{id}</code>: Returns details about a
+            specific organization.
+          </li>
+        </ul>
+
+        <h3>Quotes</h3>
+        <ul class="apiOptions">
+          <li>
+            <code>GET /api/v1/quotes</code>: Returns a list of famous quotes.
+          </li>
+          <li>
+            <code>GET /api/v1/quotes/{id}</code>: Returns details about a
+            specific quote.
+          </li>
+        </ul>
+      </section>
+      <section>
+        <h2 class="section-header">Create an account</h2>
+      </section>
+    </main>
   </body>
 </html>
