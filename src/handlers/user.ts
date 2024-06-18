@@ -32,9 +32,7 @@ export const login = async (req: Request, res: Response) => {
     },
   });
 
-  const valid = await comparePasswords(req.body.password, user!.password);
-
-  if (!user || !valid) {
+  if (!user || !(await comparePasswords(req.body.password, user.password))) {
     res.status(401);
     res.json({ message: 'Invalid credentials.' });
     return;

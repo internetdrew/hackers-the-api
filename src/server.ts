@@ -12,18 +12,14 @@ import {
 
 const app = express();
 
+app.use(express.static('public'));
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get('/', (_, res: Response) => {
-  res.status(200);
-  res.json('Hello world!');
-});
-
 app.use('/api/v1', protect, apiLimiter, v1Router);
-app.use('/api/v1/admin', protect, isAdmin, adminRouter);
+app.use('/api/v1/admin', protect, apiLimiter, isAdmin, adminRouter);
 
 app.post('/user', validateUserInputs, handleInputErrors, createUser);
 app.post('/login', validateUserInputs, handleInputErrors, login);
