@@ -1,4 +1,4 @@
-# Hackers, The API
+# Hackers, The Unofficial Movie API
 
 An API inspired by and based on the the movie Hackers.
 
