@@ -29,9 +29,7 @@ export const handleInputErrors = (
   const result = validationResult(req);
 
   if (!result.isEmpty()) {
-    res.status(400);
-    res.json({ errors: result.array() });
-    return;
+    return res.status(400).json({ errors: result.array() });
   }
   next();
 };
