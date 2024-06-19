@@ -2,7 +2,7 @@
 
 An API based on the 1995 movie Hackers. Get information on characters, organizations, quotes, and more.
 
-[Image from Hackers movie](./public/assets/hackers.jpg)
+![Image from Hackers movie](./public/assets/hackers.jpg)
 
 ## Table of Contents
 
