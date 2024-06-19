@@ -1,7 +1,9 @@
-import express, { Response } from 'express';
-import { adminRouter, v1Router } from './routes/v1';
+import express from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
+import compression from 'compression';
+
+import { adminRouter, v1Router } from './routes/v1';
 import { isAdmin, protect } from './modules/auth';
 import { createUser, login } from './handlers/user';
 import {
@@ -12,6 +14,7 @@ import {
 
 const app = express();
 
+app.use(compression());
 app.use(express.static('public'));
 app.use(cors());
 app.use(morgan('dev'));

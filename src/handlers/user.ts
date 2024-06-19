@@ -9,7 +9,7 @@ export const createUser = async (req: Request, res: Response) => {
     },
   });
   if (userAlreadyExists) {
-    res.status(400);
+    res.status(409);
     res.json({ message: 'User already exists.' });
     return;
   }

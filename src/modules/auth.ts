@@ -4,6 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 import { processEnv } from '..';
 import { User } from '@prisma/client';
 import prisma from '../db';
+import config from 'config';
 
 export interface AuthedRequest extends Request {
   user: string | JwtPayload;
@@ -13,8 +14,9 @@ export const comparePasswords = (password: string, hashedPassword: string) => {
   return bcrypt.compare(password, hashedPassword);
 };
 
-export const hashPassword = (password: string) => {
-  return bcrypt.hash(password, 10);
+export const hashPassword = async (password: string) => {
+  const salt = await bcrypt.genSalt(config.get<number>('saltRounds'));
+  return bcrypt.hash(password, salt);
 };
 
 export const createJWT = (user: User) => {

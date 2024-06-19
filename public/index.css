@@ -74,7 +74,7 @@ code {
   padding: 0.5rem 1rem;
   margin: 0 auto;
 }
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 992px) {
   .main-container {
     padding: 1rem 2rem;
     flex-direction: row;
@@ -109,12 +109,18 @@ code {
   padding: 1rem;
   border-radius: 10px;
   color: var(--dark);
+  margin: 2rem 0;
 }
 
 @media only screen and (min-width: 768px) {
   .signup-form {
-    width: 65%;
-    margin: 4rem auto 0;
+    width: 50%;
+    margin: 0 auto;
+  }
+}
+@media only screen and (min-width: 992px) {
+  .signup-form {
+    margin-top: 4rem;
   }
 }
 
