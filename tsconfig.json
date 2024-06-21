@@ -8,5 +8,5 @@
     "esModuleInterop": true,
     "declaration": true
   },
-  "include": ["src/**/*.ts", "config/**/*.ts"]
+  "include": ["src/**/*.ts", "src/**/*.test.ts"]
 }
