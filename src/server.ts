@@ -4,7 +4,7 @@ import cors from 'cors';
 import compression from 'compression';
 import helmet from 'helmet';
 
-import { adminRouter, v1Router } from './routes/v1';
+import { v1Router, adminRouter } from './routes/v1';
 import { isAdmin, protect } from './modules/auth';
 import { createUser, login } from './handlers/user';
 import {
@@ -17,6 +17,7 @@ const app = express();
 
 app.use(compression());
 app.use(helmet());
+
 app.use(express.static('public'));
 app.use(cors());
 app.use(morgan('dev'));

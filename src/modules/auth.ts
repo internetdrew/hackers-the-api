@@ -1,10 +1,8 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { Request, Response, NextFunction } from 'express';
-import { processEnv } from '..';
 import { User } from '@prisma/client';
 import prisma from '../db';
-import config from 'config';
 
 export interface AuthedRequest extends Request {
   user: string | JwtPayload;
@@ -15,15 +13,13 @@ export const comparePasswords = (password: string, hashedPassword: string) => {
 };
 
 export const hashPassword = async (password: string) => {
-  const salt = await bcrypt.genSalt(config.get<number>('saltRounds'));
+  const salt = await bcrypt.genSalt();
   return bcrypt.hash(password, salt);
 };
 
 export const createJWT = (user: User) => {
-  const token = jwt.sign(
-    { id: user.id, username: user.username },
-    processEnv.JWT_SECRET
-  );
+  const secret = process.env.JWT_SECRET as string;
+  const token = jwt.sign({ id: user?.id, username: user?.username }, secret);
   return token;
 };
 
@@ -48,13 +44,11 @@ export const protect = async (
   }
 
   try {
-    const user = jwt.verify(token, processEnv.JWT_SECRET);
+    const user = jwt.verify(token, process.env.JWT_SECRET as string);
     (req as AuthedRequest).user = user;
     next();
   } catch (e) {
-    res.status(401);
-    res.json({ message: 'Invalid token.' });
-    return;
+    return res.status(401).json({ message: 'Invalid token.' });
   }
 };
 
@@ -72,7 +66,7 @@ export const isAdmin = async (
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: userDataOnRequest.id },
+    where: { id: userDataOnRequest?.id },
   });
 
   if (user?.role !== 'ADMIN') {

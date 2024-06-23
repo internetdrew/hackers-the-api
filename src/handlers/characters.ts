@@ -3,14 +3,18 @@ import prisma from '../db';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 export const getAllCharacters = async (req: Request, res: Response) => {
-  const characters = await prisma.character.findMany({
-    include: {
-      quotes: true,
-      hacksAsHacker: true,
-      hacksAsTarget: true,
-    },
-  });
-  res.json({ data: characters });
+  try {
+    const characters = await prisma.character.findMany({
+      include: {
+        quotes: true,
+        hacksAsHacker: true,
+        hacksAsTarget: true,
+      },
+    });
+    res.json({ data: characters });
+  } catch (error) {
+    res.status(500).json({ error: 'An unexpected error has occurred.' });
+  }
 };
 
 export const getCharacterById = async (req: Request, res: Response) => {
@@ -48,7 +52,7 @@ export const createCharacter = async (req: Request, res: Response) => {
       error.code === 'P2002'
     ) {
       res
-        .status(400)
+        .status(409)
         .json({ error: 'A character with this name already exists.' });
     } else {
       res.status(500).json({ error: 'An unexpected error has occurred.' });
