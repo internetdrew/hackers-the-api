@@ -3,19 +3,6 @@ import prisma from '../db';
 import app from '../server';
 import { User } from '@prisma/client';
 
-// jest.mock('../db', () => ({
-//   prisma: {
-//     user: {
-//       findUnique: jest.fn(),
-//     },
-//   },
-// }));
-
-// jest.mock('../modules/auth', () => ({
-//   ...jest.requireActual('../modules/auth'),
-//   createJWT: jest.fn(),
-// }));
-
 const userPayload: User = {
   id: '1',
   username: 'test',
@@ -82,7 +69,7 @@ describe('GET /api/v1/characters', () => {
       .expect(200);
     const token = userRes.body.token;
 
-    const res = await supertest(app)
+    await supertest(app)
       .get('/api/v1/characters')
       .auth(token, { type: 'bearer' })
       .expect(200);

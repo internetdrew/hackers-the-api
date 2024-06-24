@@ -1,7 +1,7 @@
 import { SkillLevel } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
-import rateLimit from 'express-rate-limit';
 import { body, validationResult } from 'express-validator';
+import rateLimit from 'express-rate-limit';
 
 export const validateUserInputs = [
   body('username').trim().notEmpty().isString().escape(),
@@ -11,7 +11,7 @@ export const validateUserInputs = [
 export const validateCharacterCreationInputs = [
   body('name').trim().notEmpty().isString().escape(),
   body('knownAliases').isArray(),
-  body('imageUrl').trim().notEmpty().isString().escape(),
+  body('imageUrl').isURL(),
   body('bio').trim().notEmpty().isString().escape(),
   body('skillLevel').custom(value => {
     if (!Object.values(SkillLevel).includes(value)) {
