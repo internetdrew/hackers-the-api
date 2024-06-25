@@ -20,9 +20,8 @@ export const createUser = async (req: Request, res: Response) => {
       password: await hashPassword(req.body.password),
     },
   });
-
   const token = createJWT(user);
-  res.json({ token });
+  res.json({ data: { username: user.username, token } });
 };
 
 export const login = async (req: Request, res: Response) => {
@@ -40,4 +39,20 @@ export const login = async (req: Request, res: Response) => {
 
   const token = createJWT(user);
   res.json({ token });
+};
+
+export const authorizeAdmin = async (req: Request, res: Response) => {
+  try {
+    const admin = await prisma.user.update({
+      where: {
+        id: req.body.id,
+      },
+      data: {
+        role: 'ADMIN',
+      },
+    });
+    res.json({ data: admin });
+  } catch (error) {
+    res.status(500).json({ message: 'An unexpected error occurred.' });
+  }
 };
