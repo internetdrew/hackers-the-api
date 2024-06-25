@@ -21,7 +21,7 @@ export const createUser = async (req: Request, res: Response) => {
     },
   });
   const token = createJWT(user);
-  res.json({ data: { user, token } });
+  res.json({ data: { username: user.username, token } });
 };
 
 export const login = async (req: Request, res: Response) => {
