@@ -21,6 +21,7 @@ import {
   validateCharacterCreationInputs,
 } from '../modules/middleware';
 import { getAllQuotes, getQuoteById } from '../handlers/quotes';
+import { authorizeAdmin } from '../handlers/user';
 
 const v1Router = Router();
 const adminRouter = Router();
@@ -47,6 +48,7 @@ adminRouter.post(
   handleInputErrors,
   createCharacter
 );
+adminRouter.put('/authorize', handleInputErrors, authorizeAdmin);
 // adminRouter.put('/characters/:id', updateCharacter);
 // adminRouter.delete('/characters/:id', deleteCharacter);
 
