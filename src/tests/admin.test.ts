@@ -164,3 +164,132 @@ describe('POST /admin/characters/create', () => {
     );
   });
 });
+
+describe('POST /admin/organizations/create', () => {
+  it('should return a 401 when a user is not authorized as an admin', async () => {
+    const userResponse = await request(app).post('/user').send({
+      username: 'typicalUser',
+      password: 'weakpassword',
+    });
+    const organizationRes = await request(app)
+      .post('/admin/organizations/create')
+      .auth(userResponse.body.data.token, { type: 'bearer' })
+      .send({
+        name: 'test_organization',
+        description: 'test_description',
+        imageUrl: 'http://image.com/image.jpg',
+      });
+    expect(organizationRes.status).toBe(401);
+    expect(organizationRes.body.message).toBe('Not authorized.');
+  });
+
+  it('should return a 200 when a user is authorized as an admin', async () => {
+    const userResponse = await request(app).post('/user').send({
+      username: 'adminUser',
+      password: 'adminPassword',
+    });
+    await prisma.user.update({
+      where: {
+        id: userResponse.body.data.id,
+      },
+      data: {
+        role: 'ADMIN',
+      },
+    });
+    const organizationRes = await request(app)
+      .post('/admin/organizations/create')
+      .auth(userResponse.body.data.token, { type: 'bearer' })
+      .send({
+        name: 'test_organization',
+        description: 'test_description',
+        imageUrl: 'http://image.com/image.jpg',
+      });
+    expect(organizationRes.status).toBe(200);
+    expect(organizationRes.body.data.name).toBe('test_organization');
+  });
+});
+
+describe('PUT /admin/organizations/update/:id', () => {
+  it('should return a 401 when a user is not authorized as an admin', async () => {
+    const userResponse = await request(app).post('/user').send({
+      username: 'typicalUser',
+      password: 'weakpassword',
+    });
+    const organizationRes = await request(app)
+      .post('/admin/organizations/create')
+      .auth(userResponse.body.data.token, { type: 'bearer' })
+      .send({
+        name: 'test_organization',
+        description: 'test_description',
+        imageUrl: 'http://image.com/image.jpg',
+      });
+    expect(organizationRes.status).toBe(401);
+    expect(organizationRes.body.message).toBe('Not authorized.');
+  });
+
+  it('should return a 200 when a user is authorized as an admin', async () => {
+    const userResponse = await request(app).post('/user').send({
+      username: 'adminUser',
+      password: 'adminPassword',
+    });
+    await prisma.user.update({
+      where: {
+        id: userResponse.body.data.id,
+      },
+      data: {
+        role: 'ADMIN',
+      },
+    });
+
+    const organizationRes = await request(app)
+      .post('/admin/organizations/create')
+      .auth(userResponse.body.data.token, { type: 'bearer' })
+      .send({
+        name: 'test_organization',
+        description: 'test_description',
+        imageUrl: 'http://image.com/image.jpg',
+      });
+
+    expect(organizationRes.status).toBe(200);
+    expect(organizationRes.body.data.name).toBe('test_organization');
+
+    const response = await request(app)
+      .put(`/admin/organizations/update/${organizationRes.body.data.id}`)
+      .auth(userResponse.body.data.token, { type: 'bearer' })
+      .send({
+        name: 'updated_organization',
+        description: 'updated_description',
+        imageUrl: 'http://image.com/image.jpg',
+      });
+    expect(response.status).toBe(200);
+    expect(response.body.data.name).toBe('updated_organization');
+    expect(response.body.data.description).toBe('updated_description');
+  });
+
+  it('should return a 404 when an organization does not exist', async () => {
+    const userResponse = await request(app).post('/user').send({
+      username: 'adminUser',
+      password: 'adminPassword',
+    });
+
+    await prisma.user.update({
+      where: {
+        id: userResponse.body.data.id,
+      },
+      data: {
+        role: 'ADMIN',
+      },
+    });
+
+    const response = await request(app)
+      .put('/admin/organizations/update/1000')
+      .auth(userResponse.body.data.token, { type: 'bearer' })
+      .send({
+        name: 'updated_organization',
+        description: 'updated_description',
+        imageUrl: 'http://image.com/image.jpg',
+      });
+    expect(response.status).toBe(404);
+    expect(response.body.message).toBe('Organization not found.');
+  });
+});
