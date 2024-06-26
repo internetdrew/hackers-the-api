@@ -25,7 +25,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/v1', protect, apiLimiter, v1Router);
-app.use('/api/v1/admin', protect, apiLimiter, isAdmin, adminRouter);
+app.use('/admin', protect, apiLimiter, isAdmin, adminRouter);
 
 app.post('/user', validateUserInputs, handleInputErrors, createUser);
 app.post('/login', validateUserInputs, handleInputErrors, login);
