@@ -40,6 +40,18 @@ export const getCharacterQuotes = async (req: Request, res: Response) => {
   res.json({ data: quotes });
 };
 
+export const getCharacterHacks = async (req: Request, res: Response) => {
+  const hacker = await prisma.character.findUnique({
+    where: {
+      id: parseInt(req.params?.id),
+    },
+    include: {
+      hacksAsHacker: true,
+    },
+  });
+  return res.json({ data: hacker?.hacksAsHacker });
+};
+
 export const createCharacter = async (req: Request, res: Response) => {
   try {
     const character = await prisma.character.create({
