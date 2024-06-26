@@ -6,6 +6,7 @@ import {
   createCharacter,
   updateCharacter,
   deleteCharacter,
+  getCharacterHacks,
 } from '../handlers/characters';
 import {
   createOrganization,
@@ -15,15 +16,17 @@ import {
   updateOrganization,
 } from '../handlers/organizations';
 import {
+  createHack,
   getAllHacks,
   getHackById,
   getHackHackers,
-  getHackTarget,
-  getHackerHacks,
+  getHackTargets,
 } from '../handlers/hacks';
 import {
   handleInputErrors,
   validateCharacterCreationInputs,
+  validateHackCreationInputs,
+  validateOrganizationCreationInputs,
 } from '../modules/middleware';
 import { getAllQuotes, getQuoteById } from '../handlers/quotes';
 import { authorizeAdmin } from '../handlers/user';
@@ -35,6 +38,7 @@ const adminRouter = Router();
 v1Router.get('/characters', getAllCharacters);
 v1Router.get('/characters/:id', getCharacterById);
 v1Router.get('/characters/:id/quotes', getCharacterQuotes);
+v1Router.get('/characters/:id/hacks', getCharacterHacks);
 
 /* Organizations */
 v1Router.get('/organizations', getAllOrganizations);
@@ -43,9 +47,8 @@ v1Router.get('/organizations/:id', getOrganizationById);
 /* Hacks */
 v1Router.get('/hacks', getAllHacks);
 v1Router.get('/hacks/:id', getHackById);
-v1Router.get('/hacks/:id/target', getHackTarget);
-v1Router.get('/hacks/:id/hacker', getHackHackers);
-v1Router.get('/hacks/hacker/:id', getHackerHacks);
+v1Router.get('/hacks/:id/targets', getHackTargets);
+v1Router.get('/hacks/:id/hackers', getHackHackers);
 
 /* Quotes */
 v1Router.get('/quotes', getAllQuotes);
@@ -62,9 +65,22 @@ adminRouter.put('/characters/:id', updateCharacter);
 adminRouter.delete('/characters/delete/:id', deleteCharacter);
 
 /* Admin (Organizations) */
-adminRouter.post('/organizations/create', createOrganization);
+adminRouter.post(
+  '/organizations/create',
+  validateOrganizationCreationInputs,
+  handleInputErrors,
+  createOrganization
+);
 adminRouter.put('/organizations/update/:id', updateOrganization);
 adminRouter.delete('/organizations/delete/:id', deleteOrganization);
+
+/* Admin (Hacks) */
+adminRouter.post(
+  '/hacks/create',
+  validateHackCreationInputs,
+  handleInputErrors,
+  createHack
+);
 
 /* Admin (Users) */
 adminRouter.put('/authorize', handleInputErrors, authorizeAdmin);
