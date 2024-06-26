@@ -33,37 +33,43 @@ model User {
 }
 
 model Character {
-  id            Int            @id @default(autoincrement())
-  name          String         @unique @db.VarChar(255)
-  knownAliases  String[]
-  imageUrl      String
-  bio           String
-  skillLevel    SkillLevel
-  hacksAsHacker HackerOnHack[]
-  hacksAsTarget Hack[]
-  quotes        Quote[]
+  id           Int        @id @default(autoincrement())
+  name         String     @unique @db.VarChar(255)
+  knownAliases String[]
+  imageUrl     String
+  bio          String
+  skillLevel   SkillLevel
+
+  hacksAsHacker   HackContributor[]
+  hacksTargetedBy HackTargetCharacter[]
+  quotes          Quote[]
 }
 
 model Organization {
-  id              Int    @id @default(autoincrement())
-  name            String @unique @db.VarChar(255)
+  id              Int                      @id @default(autoincrement())
+  name            String                   @unique @db.VarChar(255)
   description     String
   imageUrl        String
-  hacksTargetedBy Hack[]
+  hacksTargetedBy HackTargetOrganization[]
 }
 
 model Hack {
-  id                   Int            @id @default(autoincrement())
-  title                String         @unique @db.VarChar(255)
-  description          String
-  associatedHackers    HackerOnHack[]
-  characterTargetId    Int?           @map("targetedCharacterId")
-  organizationTargetId Int?           @map("targetedOrganizationId")
-  targetedCharacter    Character?     @relation(fields: [characterTargetId], references: [id])
-  targetedOrganization Organization?  @relation(fields: [organizationTargetId], references: [id])
+  id                    Int                      @id @default(autoincrement())
+  title                 String                   @unique @db.VarChar(255)
+  description           String
+  contributingHackers   HackContributor[]
+  targetedCharacters    HackTargetCharacter[]
+  targetedOrganizations HackTargetOrganization[]
 }
 
-model HackerOnHack {
+model Quote {
+  id          Int       @id @default(autoincrement())
+  text        String
+  characterId Int
+  character   Character @relation(fields: [characterId], references: [id])
+}
+
+model HackContributor {
   hackId      Int
   characterId Int
   hack        Hack      @relation(fields: [hackId], references: [id])
@@ -72,9 +78,20 @@ model HackerOnHack {
   @@id([hackId, characterId])
 }
 
-model Quote {
-  id          Int       @id @default(autoincrement())
-  text        String
-  character   Character @relation(fields: [characterId], references: [id])
+model HackTargetCharacter {
+  hackId      Int
   characterId Int
+  hack        Hack      @relation(fields: [hackId], references: [id])
+  character   Character @relation(fields: [characterId], references: [id])
+
+  @@id([hackId, characterId])
+}
+
+model HackTargetOrganization {
+  hackId         Int
+  organizationId Int
+  hack           Hack         @relation(fields: [hackId], references: [id])
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  @@id([hackId, organizationId])
 }
