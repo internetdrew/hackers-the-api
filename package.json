@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test:int": "./scripts/run-integration.sh",
-    "test:int:ui": "./scripts/run-integration.sh --ui",
+    "test": "./scripts/run-integration.sh",
+    "test:ui": "./scripts/run-integration.sh --ui",
     "dev": "nodemon --exec ts-node src/index.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js"
