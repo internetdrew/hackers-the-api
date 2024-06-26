@@ -66,7 +66,9 @@ export const isAdmin = async (
   }
 
   const user = await prisma.user.findUnique({
-    where: { id: userDataOnRequest?.id },
+    where: {
+      id: userDataOnRequest.id,
+    },
   });
 
   if (user?.role !== 'ADMIN') {
