@@ -8,7 +8,7 @@ export const getAllCharacters = async (req: Request, res: Response) => {
       include: {
         quotes: true,
         hacksAsHacker: true,
-        hacksAsTarget: true,
+        hacksTargetedBy: true,
       },
     });
     res.json({ data: characters });
@@ -25,7 +25,7 @@ export const getCharacterById = async (req: Request, res: Response) => {
     include: {
       quotes: true,
       hacksAsHacker: true,
-      hacksAsTarget: true,
+      hacksTargetedBy: true,
     },
   });
   return res.json({ data: character });
