@@ -1,6 +1,10 @@
-import resetDb from './reset-db';
+import prisma from '../../db';
 import { beforeEach } from 'vitest';
 
 beforeEach(async () => {
-  await resetDb();
+  await prisma.$transaction([
+    prisma.user.deleteMany(),
+    prisma.character.deleteMany(),
+    prisma.organization.deleteMany(),
+  ]);
 });
