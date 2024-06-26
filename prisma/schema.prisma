@@ -46,7 +46,7 @@ model Character {
 
 model Organization {
   id              Int    @id @default(autoincrement())
-  name            String @db.VarChar(255)
+  name            String @unique @db.VarChar(255)
   description     String
   imageUrl        String
   hacksTargetedBy Hack[]
@@ -54,7 +54,7 @@ model Organization {
 
 model Hack {
   id                   Int            @id @default(autoincrement())
-  title                String         @db.VarChar(255)
+  title                String         @unique @db.VarChar(255)
   description          String
   associatedHackers    HackerOnHack[]
   characterTargetId    Int?           @map("targetedCharacterId")
