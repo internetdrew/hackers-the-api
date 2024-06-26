@@ -5,11 +5,13 @@ import compression from 'compression';
 import helmet from 'helmet';
 
 import { v1Router, adminRouter } from './routes/v1';
-import { isAdmin, protect } from './modules/auth';
+
 import { createUser, login } from './handlers/user';
 import {
   apiLimiter,
   handleInputErrors,
+  isAdmin,
+  protect,
   validateUserInputs,
 } from './modules/middleware';
 
