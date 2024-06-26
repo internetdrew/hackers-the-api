@@ -6,5 +6,6 @@ beforeEach(async () => {
     prisma.user.deleteMany(),
     prisma.character.deleteMany(),
     prisma.organization.deleteMany(),
+    prisma.hack.deleteMany(),
   ]);
 });
