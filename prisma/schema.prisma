@@ -56,11 +56,11 @@ model Hack {
   id                   Int            @id @default(autoincrement())
   title                String         @db.VarChar(255)
   description          String
-  targetId             Int
-  targetType           TargetType
   associatedHackers    HackerOnHack[]
-  targetedCharacter    Character?     @relation(fields: [targetId], references: [id], map: "Hack_targetId_Character_fkey")
-  targetedOrganization Organization?  @relation(fields: [targetId], references: [id], map: "Hack_targetId_Organization_fkey")
+  characterTargetId    Int?           @map("targetedCharacterId")
+  organizationTargetId Int?           @map("targetedOrganizationId")
+  targetedCharacter    Character?     @relation(fields: [characterTargetId], references: [id])
+  targetedOrganization Organization?  @relation(fields: [organizationTargetId], references: [id])
 }
 
 model HackerOnHack {
