@@ -3,7 +3,11 @@ import prisma from '../db';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 export const getAllOrganizations = async (req: Request, res: Response) => {
-  const organizations = await prisma.organization.findMany();
+  const organizations = await prisma.organization.findMany({
+    include: {
+      hacksTargetedBy: true,
+    },
+  });
   res.json({ data: organizations });
 };
 
@@ -11,6 +15,9 @@ export const getOrganizationById = async (req: Request, res: Response) => {
   const organization = await prisma.organization.findUnique({
     where: {
       id: parseInt(req.params?.id),
+    },
+    include: {
+      hacksTargetedBy: true,
     },
   });
   return res.json({ data: organization });
