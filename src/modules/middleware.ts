@@ -1,9 +1,9 @@
 import { SkillLevel } from '@prisma/client';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import rateLimit from 'express-rate-limit';
 import prisma from '../db';
-import jwt, { JwtPayload } from 'jsonwebtoken';
 
 export interface AuthedRequest extends Request {
   user: string | JwtPayload;

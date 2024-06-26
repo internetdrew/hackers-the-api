@@ -1,6 +1,5 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { Request, Response, NextFunction } from 'express';
 import { User } from '@prisma/client';
 
 export const comparePasswords = (password: string, hashedPassword: string) => {

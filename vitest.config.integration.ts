@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     include: ['src/tests/**/*.test.ts'],
     // maxConcurrency: 1,
-    setupFiles: ['src/tests/setup.ts'],
+    setupFiles: ['src/tests/helpers/setup.ts'],
     fileParallelism: false,
     // env: {
     //   PORT: '5000',
