@@ -4,7 +4,8 @@ export default defineConfig({
   test: {
     include: ['src/tests/**/*.test.ts'],
     maxConcurrency: 1,
-    setupFiles: ['src/tests/helpers/setup.ts'],
+    setupFiles: ['src/tests/setup.ts'],
+    fileParallelism: false,
   },
   resolve: {
     alias: {
