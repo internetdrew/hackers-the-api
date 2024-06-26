@@ -543,3 +543,73 @@ describe('Organizations', () => {
     });
   });
 });
+
+describe('Hacks', () => {
+  describe('POST /admin/hacks/create', () => {
+    it('Should not allow two hacks with the same name', async () => {
+      const userRes = await request(app).post('/user').send({
+        username: 'test',
+        password: 'test',
+      });
+
+      await prisma.user.update({
+        where: { id: userRes.body.data.id },
+        data: { role: 'ADMIN' },
+      });
+
+      const targetOrgRes = await request(app)
+        .post('/admin/organizations/create')
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send({
+          name: 'Test Organization',
+          description: 'Test Description',
+          imageUrl: 'https://example.com/image.jpg',
+        });
+      const orgId = targetOrgRes.body.data.id;
+
+      await request(app)
+        .post('/admin/hacks/create')
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send({
+          title: 'Test Hack One',
+          description: 'Test Description',
+          organizationTargetId: orgId,
+        });
+      const res = await request(app)
+        .post('/admin/hacks/create')
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send({
+          title: 'Test Hack One',
+          description: 'Test Description',
+          organizationTargetId: orgId,
+        });
+      expect(res.status).toBe(409);
+      expect(res.body.message).toBe('This hack already exists.');
+    });
+
+    it('responds with an error message when a target character or organization id is not provided', async () => {
+      const userRes = await request(app).post('/user').send({
+        username: 'test',
+        password: 'test',
+      });
+
+      await prisma.user.update({
+        where: { id: userRes.body.data.id },
+        data: { role: 'ADMIN' },
+      });
+
+      const hackCreationRes = await request(app)
+        .post('/admin/hacks/create')
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send({
+          title: 'Test Hack Two',
+          description: 'Test Description',
+        });
+      expect(hackCreationRes.status).toBe(400);
+      expect(hackCreationRes.body.errors).toBeInstanceOf(Array);
+      expect(hackCreationRes.body.errors[0].msg).toBe(
+        'Either characterTargetId or organizationTargetId must be provided on a hack.'
+      );
+    });
+  });
+});
