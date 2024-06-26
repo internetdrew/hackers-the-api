@@ -1,13 +1,15 @@
 import { Router } from 'express';
 import {
-  createCharacter,
   getAllCharacters,
   getCharacterById,
   getCharacterQuotes,
+  createCharacter,
   updateCharacter,
+  deleteCharacter,
 } from '../handlers/characters';
 import {
   createOrganization,
+  deleteOrganization,
   getAllOrganizations,
   getOrganizationById,
   updateOrganization,
@@ -57,12 +59,12 @@ adminRouter.post(
   createCharacter
 );
 adminRouter.put('/characters/:id', updateCharacter);
-// adminRouter.delete('/characters/delete/:id', deleteCharacter);
+adminRouter.delete('/characters/delete/:id', deleteCharacter);
 
 /* Admin (Organizations) */
 adminRouter.post('/organizations/create', createOrganization);
 adminRouter.put('/organizations/update/:id', updateOrganization);
-// adminRouter.delete('/organizations/delete/:id', deleteCharacter);
+adminRouter.delete('/organizations/delete/:id', deleteOrganization);
 
 /* Admin (Users) */
 adminRouter.put('/authorize', handleInputErrors, authorizeAdmin);

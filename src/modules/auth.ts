@@ -58,7 +58,6 @@ export const isAdmin = async (
   next: NextFunction
 ) => {
   const userDataOnRequest = (req as AuthedRequest).user;
-
   if (typeof userDataOnRequest === 'string') {
     res.status(401);
     res.json({ message: 'Not authorized.' });
@@ -72,8 +71,7 @@ export const isAdmin = async (
   });
 
   if (user?.role !== 'ADMIN') {
-    res.status(401);
-    res.json({ message: 'Not authorized.' });
+    res.status(401).json({ message: 'Not authorized.' });
     return;
   }
   next();

@@ -83,3 +83,26 @@ export const updateCharacter = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const deleteCharacter = async (req: Request, res: Response) => {
+  try {
+    await prisma.character.delete({
+      where: {
+        id: parseInt(req.params?.id),
+      },
+    });
+    res.json({ message: 'Character deleted.' });
+  } catch (error) {
+    if (
+      error instanceof PrismaClientKnownRequestError &&
+      error.code === 'P2025'
+    ) {
+      return res.status(404).json({
+        message: 'Character not found.',
+      });
+    }
+    res.status(500).json({
+      error: 'An unexpected error has occurred while deleting a character.',
+    });
+  }
+};
