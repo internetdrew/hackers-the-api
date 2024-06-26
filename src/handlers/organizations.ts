@@ -14,3 +14,14 @@ export const getOrganizationById = async (req: Request, res: Response) => {
   });
   return res.json({ data: organization });
 };
+
+export const createOrganization = async (req: Request, res: Response) => {
+  try {
+    const organization = await prisma.organization.create({
+      data: req.body,
+    });
+    res.json({ data: organization });
+  } catch (error) {
+    res.status(500).json({ error: 'An unexpected error has occurred.' });
+  }
+};
