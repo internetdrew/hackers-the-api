@@ -29,13 +29,14 @@ export const getHackById = async (req: Request, res: Response) => {
   return res.json({ data: hack });
 };
 
-export const getHackTarget = async (req: Request, res: Response) => {
+export const getHackTargets = async (req: Request, res: Response) => {
   const hack = await prisma.hack.findUnique({
     where: {
       id: parseInt(req.params?.id),
     },
     include: {
       targetedCharacter: true,
+      targetedOrganization: true,
     },
   });
 
