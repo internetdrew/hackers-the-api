@@ -88,3 +88,27 @@ export const createHack = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const updateHack = async (req: Request, res: Response) => {
+  try {
+    const hack = await prisma.hack.update({
+      where: {
+        id: parseInt(req.params?.id),
+      },
+      data: req.body,
+    });
+    res.json({ data: hack });
+  } catch (error) {
+    if (
+      error instanceof PrismaClientKnownRequestError &&
+      error.code === 'P2025'
+    ) {
+      return res.status(404).json({
+        message: 'This hack record does not exist.',
+      });
+    }
+    res.status(500).json({
+      error: 'An unexpected error has occurred while updating a hack.',
+    });
+  }
+};
