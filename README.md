@@ -1,6 +1,6 @@
 # Hackers, The Unofficial Movie API
 
-An API based on the 1995 movie Hackers. Get information on characters, organizations, quotes, and more.
+An API based on the 1995 movie Hackers. Get information on characters, organizations, hacks, quotes, and more. Inspired by the continued work of [Cyberdelia NYC](https://www.cyberdelianyc.com/). Hack the planet!
 
 ![Image from Hackers movie](./public/assets/hackers.jpg)
 
@@ -38,5 +38,12 @@ Built With
 - [Node.js](https://nodejs.org/)
 - [Express.js](https://expressjs.com/)
 - [Prisma](https://www.prisma.io/)
-- [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken)
-- [bcrypt](https://www.npmjs.com/package/bcrypt)
+
+Monitored With
+
+- [Morgan](https://github.com/expressjs/morgan)
+
+Tested With
+
+- [SuperTest](https://www.npmjs.com/package/supertest)
+- [Vitest](https://vitest.dev/)
