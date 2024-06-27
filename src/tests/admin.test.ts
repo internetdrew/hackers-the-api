@@ -2,6 +2,23 @@ import { describe, expect, it } from 'vitest';
 import request from 'supertest';
 import app from '../server';
 import prisma from '../db';
+import createTestOrganization from './helpers/createTestOrganization';
+
+const dade = {
+  name: 'Dade Murphy',
+  knownAliases: ['Zero Cool'],
+  bio: 'Elite hacker',
+  imageUrl: 'http://image.com/image.jpg',
+  skillLevel: 'ELITE',
+};
+
+const kate = {
+  name: 'Kate Libby',
+  knownAliases: ['Acid Burn'],
+  bio: 'Elite hacker',
+  imageUrl: 'http://image.com/image.jpg',
+  skillLevel: 'ELITE',
+};
 
 describe('Authorization', () => {
   describe('POST /admin/authorize', () => {
@@ -40,7 +57,7 @@ describe('Authorization', () => {
       const userId = typicalUser.body.data.id;
 
       const response = await request(app)
-        .put('/admin/authorize')
+        .patch('/admin/authorize')
         .auth(typicalUser.body.data.token, { type: 'bearer' })
         .send({
           id: userId,
@@ -68,7 +85,7 @@ describe('Authorization', () => {
         password: 'somepassword',
       });
       const response = await request(app)
-        .put('/admin/authorize')
+        .patch('/admin/authorize')
         .auth(adminUser.body.data.token, { type: 'bearer' })
         .send({
           id: nonAdminUser.body.data.id,
@@ -79,7 +96,7 @@ describe('Authorization', () => {
 });
 
 describe('Characters', () => {
-  describe('POST /admin/characters/create', () => {
+  describe('POST /admin/characters', () => {
     it('should return a 401 when a user is not authorized as an admin', async () => {
       const typicalUser = await request(app).post('/user').send({
         username: 'typicalUser',
@@ -87,7 +104,7 @@ describe('Characters', () => {
       });
 
       const response = await request(app)
-        .post('/admin/characters/create')
+        .post('/admin/characters')
         .auth(typicalUser.body.data.token, { type: 'bearer' })
         .send({
           name: 'test_character',
@@ -112,7 +129,7 @@ describe('Characters', () => {
       });
 
       const response = await request(app)
-        .post('/admin/characters/create')
+        .post('/admin/characters')
         .auth(typicalUser.body.data.token, { type: 'bearer' })
         .send({
           name: 'test_character',
@@ -141,7 +158,7 @@ describe('Characters', () => {
       });
 
       await request(app)
-        .post('/admin/characters/create')
+        .post('/admin/characters')
         .auth(userResponse.body.data.token, { type: 'bearer' })
         .send({
           name: 'test_character',
@@ -152,7 +169,7 @@ describe('Characters', () => {
         });
 
       const authResponse = await request(app)
-        .post('/admin/characters/create')
+        .post('/admin/characters')
         .auth(userResponse.body.data.token, { type: 'bearer' })
         .send({
           name: 'test_character',
@@ -167,8 +184,8 @@ describe('Characters', () => {
       );
     });
   });
-  describe('PUT /admin/characters/update/:id', () => {
-    it('should create a character and update it', async () => {
+  describe('PATCH /admin/characters/:id', () => {
+    it('should update a character', async () => {
       const userResponse = await request(app).post('/user').send({
         username: 'adminUser',
         password: 'adminPassword',
@@ -182,7 +199,7 @@ describe('Characters', () => {
         },
       });
       const characterRes = await request(app)
-        .post('/admin/characters/create')
+        .post('/admin/characters')
         .auth(userResponse.body.data.token, { type: 'bearer' })
         .send({
           name: 'test_character',
@@ -193,6 +210,16 @@ describe('Characters', () => {
         });
       expect(characterRes.status).toBe(200);
       expect(characterRes.body.data.name).toBe('test_character');
+
+      const updatedRes = await request(app)
+        .patch(`/admin/characters/${characterRes.body.data.id}`)
+        .auth(userResponse.body.data.token, { type: 'bearer' })
+        .send({
+          name: 'updated_character',
+        });
+      expect(updatedRes.status).toBe(200);
+      expect(updatedRes.body.data.name).toBe('updated_character');
+      expect(updatedRes.body.data.knownAliases).toHaveLength(3);
     });
 
     it('should return a 401 when a user is not authorized as an admin', async () => {
@@ -201,7 +228,7 @@ describe('Characters', () => {
         password: 'weakpassword',
       });
       const characterRes = await request(app)
-        .post('/admin/characters/create')
+        .post('/admin/characters')
         .auth(userResponse.body.data.token, { type: 'bearer' })
         .send({
           name: 'test_character',
@@ -232,7 +259,7 @@ describe('Characters', () => {
       });
 
       const characterRes = await request(app)
-        .post('/admin/characters/create')
+        .post('/admin/characters')
         .auth(userResponse.body.data.token, { type: 'bearer' })
         .send({
           name: 'test_character',
@@ -253,7 +280,7 @@ describe('Characters', () => {
       const characterId = characterRes.body.data.id;
 
       const deletionRes = await request(app)
-        .del(`/admin/characters/delete/${characterId}`)
+        .del(`/admin/characters/${characterId}`)
         .auth(userResponse.body.data.token, { type: 'bearer' })
         .send({
           name: 'test_character',
@@ -282,7 +309,7 @@ describe('Characters', () => {
       });
 
       const characterRes = await request(app)
-        .post('/admin/characters/create')
+        .post('/admin/characters')
         .auth(userResponse.body.data.token, { type: 'bearer' })
         .send({
           name: 'test_character',
@@ -295,7 +322,7 @@ describe('Characters', () => {
       const characterId = characterRes.body.data.id;
 
       const deletionRes = await request(app)
-        .del(`/admin/characters/delete/${characterId}`)
+        .del(`/admin/characters/${characterId}`)
         .auth(userResponse.body.data.token, { type: 'bearer' })
         .send({
           name: 'test_character',
@@ -318,7 +345,7 @@ describe('Organizations', () => {
         password: 'weakpassword',
       });
       const organizationRes = await request(app)
-        .post('/admin/organizations/create')
+        .post('/admin/organizations')
         .auth(userResponse.body.data.token, { type: 'bearer' })
         .send({
           name: 'test_organization',
@@ -343,7 +370,7 @@ describe('Organizations', () => {
         },
       });
       const organizationRes = await request(app)
-        .post('/admin/organizations/create')
+        .post('/admin/organizations')
         .auth(userResponse.body.data.token, { type: 'bearer' })
         .send({
           name: 'test_organization',
@@ -355,14 +382,14 @@ describe('Organizations', () => {
     });
   });
 
-  describe('PUT /admin/organizations/update/:id', () => {
+  describe('PATCH /admin/organizations/update/:id', () => {
     it('should return a 401 when a user is not authorized as an admin', async () => {
       const userResponse = await request(app).post('/user').send({
         username: 'typicalUser',
         password: 'weakpassword',
       });
       const organizationRes = await request(app)
-        .post('/admin/organizations/create')
+        .post('/admin/organizations')
         .auth(userResponse.body.data.token, { type: 'bearer' })
         .send({
           name: 'test_organization',
@@ -388,7 +415,7 @@ describe('Organizations', () => {
       });
 
       const organizationRes = await request(app)
-        .post('/admin/organizations/create')
+        .post('/admin/organizations')
         .auth(userResponse.body.data.token, { type: 'bearer' })
         .send({
           name: 'test_organization',
@@ -400,7 +427,7 @@ describe('Organizations', () => {
       expect(organizationRes.body.data.name).toBe('test_organization');
 
       const response = await request(app)
-        .put(`/admin/organizations/update/${organizationRes.body.data.id}`)
+        .patch(`/admin/organizations/${organizationRes.body.data.id}`)
         .auth(userResponse.body.data.token, { type: 'bearer' })
         .send({
           name: 'updated_organization',
@@ -428,7 +455,7 @@ describe('Organizations', () => {
       });
 
       const response = await request(app)
-        .put('/admin/organizations/update/1000')
+        .patch('/admin/organizations/1000')
         .auth(userResponse.body.data.token, { type: 'bearer' })
         .send({
           name: 'updated_organization',
@@ -439,7 +466,7 @@ describe('Organizations', () => {
       expect(response.body.message).toBe('Organization not found.');
     });
   });
-  describe('DELETE /admin/organizations/delete/:id', () => {
+  describe('DELETE /admin/organizations/:id', () => {
     it('should return a 401 when a user is not authorized as an admin', async () => {
       const userResponse = await request(app).post('/user').send({
         username: 'adminUser',
@@ -456,7 +483,7 @@ describe('Organizations', () => {
       });
 
       const organizationRes = await request(app)
-        .post('/admin/organizations/create')
+        .post('/admin/organizations')
         .auth(userResponse.body.data.token, { type: 'bearer' })
         .send({
           name: 'test_organization',
@@ -476,7 +503,7 @@ describe('Organizations', () => {
       });
 
       const deletionRes = await request(app)
-        .del(`/admin/organizations/delete/${orgId}`)
+        .del(`/admin/organizations/${orgId}`)
         .auth(userResponse.body.data.token, { type: 'bearer' })
         .send({ id: orgId });
 
@@ -500,7 +527,7 @@ describe('Organizations', () => {
       });
 
       const organizationRes = await request(app)
-        .post('/admin/organizations/create')
+        .post('/admin/organizations')
         .auth(userResponse.body.data.token, { type: 'bearer' })
         .send({
           name: 'test_organization',
@@ -511,7 +538,7 @@ describe('Organizations', () => {
       const orgId = organizationRes.body.data.id;
 
       const deletionRes = await request(app)
-        .del(`/admin/organizations/delete/${orgId}`)
+        .del(`/admin/organizations/${orgId}`)
         .auth(userResponse.body.data.token, { type: 'bearer' })
         .send({ id: orgId });
 
@@ -535,11 +562,219 @@ describe('Organizations', () => {
       });
 
       const response = await request(app)
-        .del('/admin/organizations/delete/1000')
+        .del('/admin/organizations/1000')
         .auth(userResponse.body.data.token, { type: 'bearer' });
 
       expect(response.status).toBe(404);
       expect(response.body.message).toBe('Organization not found.');
+    });
+  });
+});
+
+describe('Hacks', () => {
+  describe('POST /admin/hacks', () => {
+    it('should return a 401 when a user is not authorized as an admin', async () => {
+      const userResponse = await request(app).post('/user').send({
+        username: 'typicalUser',
+        password: 'weakpassword',
+      });
+
+      const hackRes = await request(app)
+        .post('/admin/hacks')
+        .auth(userResponse.body.data.token, { type: 'bearer' })
+        .send({
+          title: 'test_hack',
+          description: 'test_description',
+        });
+      expect(hackRes.status).toBe(401);
+      expect(hackRes.body.message).toBe('Not authorized.');
+    });
+
+    it('Should not allow two hacks with the same title', async () => {
+      const userRes = await request(app).post('/user').send({
+        username: 'test',
+        password: 'test',
+      });
+
+      await prisma.user.update({
+        where: { id: userRes.body.data.id },
+        data: { role: 'ADMIN' },
+      });
+
+      const orgRes = await createTestOrganization({
+        authToken: userRes.body.data.token,
+        name: 'Test Organization',
+        description: 'Test Description',
+        imageUrl: 'https://example.com/image.jpg',
+      });
+
+      await request(app)
+        .post('/admin/hacks')
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send({
+          title: 'Test Hack One',
+          description: 'Test Description',
+          targetOrganizationId: orgRes.body.data.id,
+        });
+      const res = await request(app)
+        .post('/admin/hacks')
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send({
+          title: 'Test Hack One',
+          description: 'Test Description',
+          targetOrganizationId: orgRes.body.data.id,
+        });
+      expect(res.status).toBe(409);
+      expect(res.body.message).toBe('This hack already exists.');
+    });
+  });
+  describe('PATCH /admin/hacks/:id', () => {
+    it('Should return a 401 for non-admin users', async () => {
+      const userRes = await request(app).post('/user').send({
+        username: 'test',
+        password: 'test',
+      });
+
+      await prisma.user.update({
+        where: { id: userRes.body.data.id },
+        data: { role: 'ADMIN' },
+      });
+
+      const orgRes = await createTestOrganization({
+        authToken: userRes.body.data.token,
+        name: 'Test Organization',
+        description: 'Test Description',
+        imageUrl: 'https://example.com/image.jpg',
+      });
+
+      const hackRes = await request(app)
+        .post('/admin/hacks')
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send({
+          title: 'test_hack',
+          description: 'test_description',
+          targetOrganizationId: orgRes.body.data.id,
+        });
+
+      await prisma.user.update({
+        where: { id: userRes.body.data.id },
+        data: { role: 'USER' },
+      });
+
+      const res = await request(app)
+        .put(`/admin/hacks/${hackRes.body.data.id}`)
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send({
+          title: 'updated_hack',
+          description: 'updated_description',
+        });
+      expect(res.status).toBe(401);
+      expect(res.body.message).toBe('Not authorized.');
+    });
+
+    it('Should update a hack', async () => {
+      const userRes = await request(app).post('/user').send({
+        username: 'test',
+        password: 'test',
+      });
+
+      await prisma.user.update({
+        where: { id: userRes.body.data.id },
+        data: { role: 'ADMIN' },
+      });
+
+      const orgRes = await createTestOrganization({
+        authToken: userRes.body.data.token,
+        name: 'Test Organization',
+        description: 'Test Description',
+        imageUrl: 'https://example.com/image.jpg',
+      });
+
+      const hackRes = await request(app)
+        .post('/admin/hacks')
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send({
+          title: 'test_hack',
+          description: 'test_description',
+          targetOrganizationId: orgRes.body.data.id,
+        });
+
+      const res = await request(app)
+        .patch(`/admin/hacks/${hackRes.body.data.id}`)
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send({
+          title: 'updated_hack',
+        });
+      expect(res.status).toBe(200);
+      expect(res.body.data.title).toBe('updated_hack');
+      expect(res.body.data.description).toBe('test_description');
+    });
+
+    it('Should return a 404 for a non-existent hack', async () => {
+      const userRes = await request(app).post('/user').send({
+        username: 'test',
+        password: 'test',
+      });
+
+      await prisma.user.update({
+        where: { id: userRes.body.data.id },
+        data: { role: 'ADMIN' },
+      });
+
+      const res = await request(app)
+        .patch('/admin/hacks/1000')
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send({
+          title: 'updated_hack',
+          description: 'updated_description',
+        });
+      expect(res.status).toBe(404);
+      expect(res.body.message).toBe('This hack record does not exist.');
+    });
+
+    it('Should add a contributor to a hack', async () => {
+      const userRes = await request(app).post('/user').send({
+        username: 'test',
+        password: 'test',
+      });
+
+      await prisma.user.update({
+        where: { id: userRes.body.data.id },
+        data: { role: 'ADMIN' },
+      });
+
+      const orgRes = await createTestOrganization({
+        authToken: userRes.body.data.token,
+        name: 'Test Organization',
+        description: 'Test Description',
+        imageUrl: 'https://example.com/image.jpg',
+      });
+
+      const dadeRes = await request(app)
+        .post('/admin/characters')
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send(dade);
+
+      const hackRes = await request(app)
+        .post('/admin/hacks')
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send({
+          title: 'test_hack',
+          description: 'test_description',
+          targetOrganizationId: orgRes.body.data.id,
+        });
+
+      const res = await request(app)
+        .post(`/admin/hacks/${hackRes.body.data.id}/contribution`)
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send({
+          characterId: dadeRes.body.data.id,
+          hackId: hackRes.body.data.id,
+        });
+
+      const newHackRes = await request(app)
+        .get(`/api/v1/hacks/${hackRes.body.data.id}`)
+        .auth(userRes.body.data.token, { type: 'bearer' });
     });
   });
 });
