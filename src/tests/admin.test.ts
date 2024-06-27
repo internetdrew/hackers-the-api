@@ -546,6 +546,23 @@ describe('Organizations', () => {
 
 describe('Hacks', () => {
   describe('POST /admin/hacks/create', () => {
+    it('should return a 401 when a user is not authorized as an admin', async () => {
+      const userResponse = await request(app).post('/user').send({
+        username: 'typicalUser',
+        password: 'weakpassword',
+      });
+
+      const hackRes = await request(app)
+        .post('/admin/hacks/create')
+        .auth(userResponse.body.data.token, { type: 'bearer' })
+        .send({
+          title: 'test_hack',
+          description: 'test_description',
+        });
+      expect(hackRes.status).toBe(401);
+      expect(hackRes.body.message).toBe('Not authorized.');
+    });
+
     it('Should not allow two hacks with the same name', async () => {
       const userRes = await request(app).post('/user').send({
         username: 'test',
@@ -557,23 +574,12 @@ describe('Hacks', () => {
         data: { role: 'ADMIN' },
       });
 
-      const targetOrgRes = await request(app)
-        .post('/admin/organizations/create')
-        .auth(userRes.body.data.token, { type: 'bearer' })
-        .send({
-          name: 'Test Organization',
-          description: 'Test Description',
-          imageUrl: 'https://example.com/image.jpg',
-        });
-      const orgId = targetOrgRes.body.data.id;
-
       await request(app)
         .post('/admin/hacks/create')
         .auth(userRes.body.data.token, { type: 'bearer' })
         .send({
           title: 'Test Hack One',
           description: 'Test Description',
-          organizationTargetId: orgId,
         });
       const res = await request(app)
         .post('/admin/hacks/create')
@@ -581,13 +587,13 @@ describe('Hacks', () => {
         .send({
           title: 'Test Hack One',
           description: 'Test Description',
-          organizationTargetId: orgId,
         });
       expect(res.status).toBe(409);
       expect(res.body.message).toBe('This hack already exists.');
     });
-
-    it('responds with an error message when a target character or organization id is not provided', async () => {
+  });
+  describe('PUT /admin/hacks/update/:id', () => {
+    it('Should return a 401 for non-admin users', async () => {
       const userRes = await request(app).post('/user').send({
         username: 'test',
         password: 'test',
@@ -598,18 +604,83 @@ describe('Hacks', () => {
         data: { role: 'ADMIN' },
       });
 
-      const hackCreationRes = await request(app)
+      const hackRes = await request(app)
         .post('/admin/hacks/create')
         .auth(userRes.body.data.token, { type: 'bearer' })
         .send({
-          title: 'Test Hack Two',
-          description: 'Test Description',
+          title: 'test_hack',
+          description: 'test_description',
         });
-      expect(hackCreationRes.status).toBe(400);
-      expect(hackCreationRes.body.errors).toBeInstanceOf(Array);
-      expect(hackCreationRes.body.errors[0].msg).toBe(
-        'Either characterTargetId or organizationTargetId must be provided on a hack.'
-      );
+
+      await prisma.user.update({
+        where: { id: userRes.body.data.id },
+        data: { role: 'USER' },
+      });
+
+      const res = await request(app)
+        .put(`/admin/hacks/update/${hackRes.body.data.id}`)
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send({
+          title: 'updated_hack',
+          description: 'updated_description',
+        });
+      expect(res.status).toBe(401);
+      expect(res.body.message).toBe('Not authorized.');
+    });
+
+    it('Should update a hack', async () => {
+      const userRes = await request(app).post('/user').send({
+        username: 'test',
+        password: 'test',
+      });
+
+      await prisma.user.update({
+        where: { id: userRes.body.data.id },
+        data: { role: 'ADMIN' },
+      });
+
+      const hackRes = await request(app)
+        .post('/admin/hacks/create')
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send({
+          title: 'test_hack',
+          description: 'test_description',
+        });
+
+      const res = await request(app)
+        .put(`/admin/hacks/update/${hackRes.body.data.id}`)
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send({
+          title: 'updated_hack',
+          description: 'updated_description',
+        });
+      expect(res.status).toBe(200);
+      expect(res.body.data.title).toBe('updated_hack');
+      expect(res.body.data.description).toBe('updated_description');
+    });
+
+    it('Should return a 404 for a non-existent hack', async () => {
+      const userRes = await request(app).post('/user').send({
+        username: 'test',
+        password: 'test',
+      });
+
+      await prisma.user.update({
+        where: { id: userRes.body.data.id },
+        data: { role: 'ADMIN' },
+      });
+
+      const res = await request(app)
+        .put('/admin/hacks/update/1000')
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send({
+          title: 'updated_hack',
+          description: 'updated_description',
+        });
+      expect(res.status).toBe(404);
+      expect(res.body.message).toBe('This hack record does not exist.');
     });
   });
 });
+
+// describe('Hack Contributors', () => {});
