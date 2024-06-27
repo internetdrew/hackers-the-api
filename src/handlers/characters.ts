@@ -7,7 +7,7 @@ export const getAllCharacters = async (req: Request, res: Response) => {
     const characters = await prisma.character.findMany({
       include: {
         quotes: true,
-        hacksAsHacker: true,
+        hackContributions: true,
         hacksTargetedBy: true,
       },
     });
@@ -24,7 +24,7 @@ export const getCharacterById = async (req: Request, res: Response) => {
     },
     include: {
       quotes: true,
-      hacksAsHacker: true,
+      hackContributions: true,
       hacksTargetedBy: true,
     },
   });
@@ -46,10 +46,10 @@ export const getCharacterHacks = async (req: Request, res: Response) => {
       id: parseInt(req.params?.id),
     },
     include: {
-      hacksAsHacker: true,
+      hackContributions: true,
     },
   });
-  return res.json({ data: hacker?.hacksAsHacker });
+  return res.json({ data: hacker?.hackContributions });
 };
 
 export const createCharacter = async (req: Request, res: Response) => {
