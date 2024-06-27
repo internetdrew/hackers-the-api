@@ -5,9 +5,13 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 export const getAllHacks = async (req: Request, res: Response) => {
   const hacks = await prisma.hack.findMany({
     include: {
-      contributingHackers: true,
-      targetedCharacters: true,
-      targetedOrganizations: true,
+      contributors: {
+        include: {
+          character: true,
+        },
+      },
+      targetCharacter: true,
+      targetOrganization: true,
     },
   });
 
@@ -20,52 +24,17 @@ export const getHackById = async (req: Request, res: Response) => {
       id: parseInt(req.params?.id),
     },
     include: {
-      contributingHackers: true,
-      targetedCharacters: true,
-      targetedOrganizations: true,
+      contributors: {
+        select: {
+          character: true,
+        },
+      },
+      targetCharacter: true,
+      targetOrganization: true,
     },
   });
 
   return res.json({ data: hack });
-};
-
-export const getHackTargets = async (req: Request, res: Response) => {
-  const targetedOrganizations = await prisma.hackTargetOrganization.findMany({
-    where: {
-      hackId: parseInt(req.params?.id),
-    },
-    include: {
-      organization: true,
-    },
-  });
-
-  const targetedCharacters = await prisma.hackTargetCharacter.findMany({
-    where: {
-      hackId: parseInt(req.params?.id),
-    },
-    include: {
-      character: true,
-    },
-  });
-
-  return res.json({
-    data: {
-      targetedOrganizations,
-      targetedCharacters,
-    },
-  });
-};
-
-export const getHackHackers = async (req: Request, res: Response) => {
-  const hackContributors = await prisma.hackContributor.findMany({
-    where: {
-      hackId: parseInt(req.params?.id),
-    },
-    include: {
-      character: true,
-    },
-  });
-  return res.json({ data: hackContributors });
 };
 
 export const createHack = async (req: Request, res: Response) => {
@@ -109,6 +78,49 @@ export const updateHack = async (req: Request, res: Response) => {
     }
     res.status(500).json({
       error: 'An unexpected error has occurred while updating a hack.',
+    });
+  }
+};
+
+export const addHackContributor = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { characterId } = req.body;
+
+  try {
+    const hack = await prisma.hack.findUnique({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    if (!hack) {
+      return res.status(404).json({
+        message: 'This hack record does not exist.',
+      });
+    }
+
+    const character = await prisma.character.findUnique({
+      where: {
+        id: parseInt(characterId),
+      },
+    });
+
+    if (!character) {
+      return res.status(404).json({
+        message: 'This character record does not exist.',
+      });
+    }
+
+    const contribution = await prisma.hackContribution.create({
+      data: {
+        hackId: parseInt(id),
+        characterId: parseInt(characterId),
+      },
+    });
+    res.json({ data: contribution });
+  } catch (error) {
+    res.status(500).json({
+      error: 'An unexpected error has occurred while adding a contributor.',
     });
   }
 };
