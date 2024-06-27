@@ -55,19 +55,14 @@ adminRouter.post(
   createHack
 );
 adminRouter.patch('/hacks/:id', updateHack);
+// adminRouter.delete('/hacks/:id', deleteHack);
+
 adminRouter.post(
   '/hacks/:id/contribution',
   validateHackContributorInput,
   handleInputErrors,
   addHackContributor
 );
-// adminRouter.post(
-//   '/hacks/:id/hackers',
-//   validateHackContributorCreationInputs,
-//   handleInputErrors,
-//   createHackContributor
-// );
-// adminRouter.delete('/hacks/delete/:id', deleteHack);
 
 /* Admin (Users) */
 adminRouter.patch('/authorize', handleInputErrors, authorizeAdmin);

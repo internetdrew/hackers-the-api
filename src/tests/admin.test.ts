@@ -3,6 +3,7 @@ import request from 'supertest';
 import app from '../server';
 import prisma from '../db';
 import createTestOrganization from './helpers/createTestOrganization';
+import makeUserRole from './helpers/makeUserRole';
 
 const dade = {
   name: 'Dade Murphy',
@@ -45,15 +46,8 @@ describe('Authorization', () => {
         username: 'typicalUser',
         password: 'weakpassword',
       });
-      await prisma.user.update({
-        where: {
-          id: typicalUser.body.data.id,
-        },
-        data: {
-          role: 'ADMIN',
-        },
-      });
 
+      await makeUserRole({ userId: typicalUser.body.data.id, role: 'ADMIN' });
       const userId = typicalUser.body.data.id;
 
       const response = await request(app)
@@ -71,14 +65,8 @@ describe('Authorization', () => {
         username: 'typicalUser',
         password: 'weakpassword',
       });
-      await prisma.user.update({
-        where: {
-          id: adminUser.body.data.id,
-        },
-        data: {
-          role: 'ADMIN',
-        },
-      });
+
+      await makeUserRole({ userId: adminUser.body.data.id, role: 'ADMIN' });
 
       const nonAdminUser = await request(app).post('/user').send({
         username: 'nonAdminUser',
@@ -119,14 +107,8 @@ describe('Characters', () => {
         username: 'typicalUser',
         password: 'weakpassword',
       });
-      await prisma.user.update({
-        where: {
-          id: typicalUser.body.data.id,
-        },
-        data: {
-          role: 'ADMIN',
-        },
-      });
+
+      await makeUserRole({ userId: typicalUser.body.data.id, role: 'ADMIN' });
 
       const response = await request(app)
         .post('/admin/characters')
@@ -148,14 +130,8 @@ describe('Characters', () => {
         username: 'typicalUser',
         password: 'weakpassword',
       });
-      await prisma.user.update({
-        where: {
-          id: userResponse.body.data.id,
-        },
-        data: {
-          role: 'ADMIN',
-        },
-      });
+
+      await makeUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
 
       await request(app)
         .post('/admin/characters')
@@ -190,14 +166,8 @@ describe('Characters', () => {
         username: 'adminUser',
         password: 'adminPassword',
       });
-      await prisma.user.update({
-        where: {
-          id: userResponse.body.data.id,
-        },
-        data: {
-          role: 'ADMIN',
-        },
-      });
+
+      await makeUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
       const characterRes = await request(app)
         .post('/admin/characters')
         .auth(userResponse.body.data.token, { type: 'bearer' })
@@ -249,14 +219,7 @@ describe('Characters', () => {
         password: 'weakpassword',
       });
 
-      await prisma.user.update({
-        where: {
-          id: userResponse.body.data.id,
-        },
-        data: {
-          role: 'ADMIN',
-        },
-      });
+      await makeUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
 
       const characterRes = await request(app)
         .post('/admin/characters')
@@ -269,14 +232,7 @@ describe('Characters', () => {
           skillLevel: 'ELITE',
         });
 
-      await prisma.user.update({
-        where: {
-          id: userResponse.body.data.id,
-        },
-        data: {
-          role: 'USER',
-        },
-      });
+      await makeUserRole({ userId: userResponse.body.data.id, role: 'USER' });
       const characterId = characterRes.body.data.id;
 
       const deletionRes = await request(app)
@@ -299,14 +255,7 @@ describe('Characters', () => {
         password: 'weakpassword',
       });
 
-      await prisma.user.update({
-        where: {
-          id: userResponse.body.data.id,
-        },
-        data: {
-          role: 'ADMIN',
-        },
-      });
+      await makeUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
 
       const characterRes = await request(app)
         .post('/admin/characters')
@@ -338,22 +287,21 @@ describe('Characters', () => {
 });
 
 describe('Organizations', () => {
-  describe('POST /admin/organizations/create', () => {
+  describe('POST /admin/organizations', () => {
     it('should return a 401 when a user is not authorized as an admin', async () => {
       const userResponse = await request(app).post('/user').send({
         username: 'typicalUser',
         password: 'weakpassword',
       });
-      const organizationRes = await request(app)
-        .post('/admin/organizations')
-        .auth(userResponse.body.data.token, { type: 'bearer' })
-        .send({
-          name: 'test_organization',
-          description: 'test_description',
-          imageUrl: 'http://image.com/image.jpg',
-        });
-      expect(organizationRes.status).toBe(401);
-      expect(organizationRes.body.message).toBe('Not authorized.');
+
+      const orgRes = await createTestOrganization({
+        authToken: userResponse.body.data.token,
+        name: 'Test Organization',
+        description: 'Test Description',
+        imageUrl: 'https://example.com/image.jpg',
+      });
+      expect(orgRes.status).toBe(401);
+      expect(orgRes.body.message).toBe('Not authorized.');
     });
 
     it('should return a 200 when a user is authorized as an admin', async () => {
@@ -361,14 +309,9 @@ describe('Organizations', () => {
         username: 'adminUser',
         password: 'adminPassword',
       });
-      await prisma.user.update({
-        where: {
-          id: userResponse.body.data.id,
-        },
-        data: {
-          role: 'ADMIN',
-        },
-      });
+
+      await makeUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
+
       const organizationRes = await request(app)
         .post('/admin/organizations')
         .auth(userResponse.body.data.token, { type: 'bearer' })
@@ -382,7 +325,7 @@ describe('Organizations', () => {
     });
   });
 
-  describe('PATCH /admin/organizations/update/:id', () => {
+  describe('PATCH /admin/organizations/:id', () => {
     it('should return a 401 when a user is not authorized as an admin', async () => {
       const userResponse = await request(app).post('/user').send({
         username: 'typicalUser',
@@ -400,19 +343,13 @@ describe('Organizations', () => {
       expect(organizationRes.body.message).toBe('Not authorized.');
     });
 
-    it('should return a 200 when a user is authorized as an admin', async () => {
+    it('should patch an organizations data', async () => {
       const userResponse = await request(app).post('/user').send({
         username: 'adminUser',
         password: 'adminPassword',
       });
-      await prisma.user.update({
-        where: {
-          id: userResponse.body.data.id,
-        },
-        data: {
-          role: 'ADMIN',
-        },
-      });
+
+      await makeUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
 
       const organizationRes = await request(app)
         .post('/admin/organizations')
@@ -431,12 +368,12 @@ describe('Organizations', () => {
         .auth(userResponse.body.data.token, { type: 'bearer' })
         .send({
           name: 'updated_organization',
-          description: 'updated_description',
-          imageUrl: 'http://image.com/image.jpg',
+          imageUrl: 'http://super.com/image.jpg',
         });
       expect(response.status).toBe(200);
       expect(response.body.data.name).toBe('updated_organization');
-      expect(response.body.data.description).toBe('updated_description');
+      expect(response.body.data.description).toBe('test_description');
+      expect(response.body.data.imageUrl).toBe('http://super.com/image.jpg');
     });
 
     it('should return a 404 when an organization does not exist', async () => {
@@ -445,14 +382,7 @@ describe('Organizations', () => {
         password: 'adminPassword',
       });
 
-      await prisma.user.update({
-        where: {
-          id: userResponse.body.data.id,
-        },
-        data: {
-          role: 'ADMIN',
-        },
-      });
+      await makeUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
 
       const response = await request(app)
         .patch('/admin/organizations/1000')
@@ -473,14 +403,7 @@ describe('Organizations', () => {
         password: 'adminPassword',
       });
 
-      await prisma.user.update({
-        where: {
-          id: userResponse.body.data.id,
-        },
-        data: {
-          role: 'ADMIN',
-        },
-      });
+      await makeUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
 
       const organizationRes = await request(app)
         .post('/admin/organizations')
@@ -493,14 +416,7 @@ describe('Organizations', () => {
 
       const orgId = organizationRes.body.data.id;
 
-      await prisma.user.update({
-        where: {
-          id: userResponse.body.data.id,
-        },
-        data: {
-          role: 'USER',
-        },
-      });
+      await makeUserRole({ userId: userResponse.body.data.id, role: 'USER' });
 
       const deletionRes = await request(app)
         .del(`/admin/organizations/${orgId}`)
@@ -511,20 +427,13 @@ describe('Organizations', () => {
       expect(deletionRes.body.message).toBe('Not authorized.');
     });
 
-    it('should return a 200 and success message when a user is authorized as an admin', async () => {
+    it('should return a 200 and success message', async () => {
       const userResponse = await request(app).post('/user').send({
         username: 'adminUser',
         password: 'adminPassword',
       });
 
-      await prisma.user.update({
-        where: {
-          id: userResponse.body.data.id,
-        },
-        data: {
-          role: 'ADMIN',
-        },
-      });
+      await makeUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
 
       const organizationRes = await request(app)
         .post('/admin/organizations')
@@ -552,14 +461,7 @@ describe('Organizations', () => {
         password: 'adminPassword',
       });
 
-      await prisma.user.update({
-        where: {
-          id: userResponse.body.data.id,
-        },
-        data: {
-          role: 'ADMIN',
-        },
-      });
+      await makeUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
 
       const response = await request(app)
         .del('/admin/organizations/1000')
@@ -596,10 +498,7 @@ describe('Hacks', () => {
         password: 'test',
       });
 
-      await prisma.user.update({
-        where: { id: userRes.body.data.id },
-        data: { role: 'ADMIN' },
-      });
+      await makeUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
 
       const orgRes = await createTestOrganization({
         authToken: userRes.body.data.token,
@@ -635,10 +534,7 @@ describe('Hacks', () => {
         password: 'test',
       });
 
-      await prisma.user.update({
-        where: { id: userRes.body.data.id },
-        data: { role: 'ADMIN' },
-      });
+      await makeUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
 
       const orgRes = await createTestOrganization({
         authToken: userRes.body.data.token,
@@ -656,10 +552,7 @@ describe('Hacks', () => {
           targetOrganizationId: orgRes.body.data.id,
         });
 
-      await prisma.user.update({
-        where: { id: userRes.body.data.id },
-        data: { role: 'USER' },
-      });
+      await makeUserRole({ userId: userRes.body.data.id, role: 'USER' });
 
       const res = await request(app)
         .put(`/admin/hacks/${hackRes.body.data.id}`)
@@ -678,10 +571,7 @@ describe('Hacks', () => {
         password: 'test',
       });
 
-      await prisma.user.update({
-        where: { id: userRes.body.data.id },
-        data: { role: 'ADMIN' },
-      });
+      await makeUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
 
       const orgRes = await createTestOrganization({
         authToken: userRes.body.data.token,
@@ -716,10 +606,7 @@ describe('Hacks', () => {
         password: 'test',
       });
 
-      await prisma.user.update({
-        where: { id: userRes.body.data.id },
-        data: { role: 'ADMIN' },
-      });
+      await makeUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
 
       const res = await request(app)
         .patch('/admin/hacks/1000')
@@ -738,10 +625,7 @@ describe('Hacks', () => {
         password: 'test',
       });
 
-      await prisma.user.update({
-        where: { id: userRes.body.data.id },
-        data: { role: 'ADMIN' },
-      });
+      await makeUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
 
       const orgRes = await createTestOrganization({
         authToken: userRes.body.data.token,
