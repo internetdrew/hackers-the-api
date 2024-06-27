@@ -5,9 +5,9 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 export const getAllHacks = async (req: Request, res: Response) => {
   const hacks = await prisma.hack.findMany({
     include: {
-      associatedHackers: true,
-      targetedCharacter: true,
-      targetedOrganization: true,
+      contributingHackers: true,
+      targetedCharacters: true,
+      targetedOrganizations: true,
     },
   });
 
@@ -20,9 +20,9 @@ export const getHackById = async (req: Request, res: Response) => {
       id: parseInt(req.params?.id),
     },
     include: {
-      associatedHackers: true,
-      targetedCharacter: true,
-      targetedOrganization: true,
+      contributingHackers: true,
+      targetedCharacters: true,
+      targetedOrganizations: true,
     },
   });
 
@@ -30,30 +30,42 @@ export const getHackById = async (req: Request, res: Response) => {
 };
 
 export const getHackTargets = async (req: Request, res: Response) => {
-  const hack = await prisma.hack.findUnique({
+  const targetedOrganizations = await prisma.hackTargetOrganization.findMany({
     where: {
-      id: parseInt(req.params?.id),
+      hackId: parseInt(req.params?.id),
     },
     include: {
-      targetedCharacter: true,
-      targetedOrganization: true,
+      organization: true,
     },
   });
 
-  return res.json({ data: hack?.targetedCharacter });
+  const targetedCharacters = await prisma.hackTargetCharacter.findMany({
+    where: {
+      hackId: parseInt(req.params?.id),
+    },
+    include: {
+      character: true,
+    },
+  });
+
+  return res.json({
+    data: {
+      targetedOrganizations,
+      targetedCharacters,
+    },
+  });
 };
 
 export const getHackHackers = async (req: Request, res: Response) => {
-  const hack = await prisma.hack.findUnique({
+  const hackContributors = await prisma.hackContributor.findMany({
     where: {
-      id: parseInt(req.params?.id),
+      hackId: parseInt(req.params?.id),
     },
     include: {
-      associatedHackers: true,
+      character: true,
     },
   });
-
-  return res.json({ data: hack?.associatedHackers });
+  return res.json({ data: hackContributors });
 };
 
 export const createHack = async (req: Request, res: Response) => {
