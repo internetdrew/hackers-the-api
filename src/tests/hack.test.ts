@@ -21,19 +21,30 @@ describe('GET /api/v1/hacks', () => {
       data: { role: 'ADMIN' },
     });
 
+    const orgRes = await request(app)
+      .post('/admin/organizations')
+      .auth(userRes.body.data.token, { type: 'bearer' })
+      .send({
+        name: 'Test Organization',
+        description: 'Test Description',
+        imageUrl: 'https://example.com/image.jpg',
+      });
+
     await request(app)
-      .post('/admin/hacks/create')
+      .post('/admin/hacks')
       .auth(userRes.body.data.token, { type: 'bearer' })
       .send({
         title: 'Test Hack One',
         description: 'Test Description',
+        targetOrganizationId: orgRes.body.data.id,
       });
     await request(app)
-      .post('/admin/hacks/create')
+      .post('/admin/hacks')
       .auth(userRes.body.data.token, { type: 'bearer' })
       .send({
         title: 'Test Hack Two',
         description: 'Test Description',
+        targetOrganizationId: orgRes.body.data.id,
       });
 
     await prisma.user.update({
@@ -61,19 +72,30 @@ describe('GET /api/v1/hacks/:id', () => {
       data: { role: 'ADMIN' },
     });
 
+    const orgRes = await request(app)
+      .post('/admin/organizations')
+      .auth(userRes.body.data.token, { type: 'bearer' })
+      .send({
+        name: 'Test Organization',
+        description: 'Test Description',
+        imageUrl: 'https://example.com/image.jpg',
+      });
+
     const hackOneRes = await request(app)
-      .post('/admin/hacks/create')
+      .post('/admin/hacks')
       .auth(userRes.body.data.token, { type: 'bearer' })
       .send({
         title: 'Test Hack One',
         description: 'Test Description',
+        targetOrganizationId: orgRes.body.data.id,
       });
     const hackTwoRes = await request(app)
-      .post('/admin/hacks/create')
+      .post('/admin/hacks')
       .auth(userRes.body.data.token, { type: 'bearer' })
       .send({
         title: 'Test Hack Two',
         description: 'Test Description',
+        targetOrganizationId: orgRes.body.data.id,
       });
 
     await prisma.user.update({
@@ -94,47 +116,3 @@ describe('GET /api/v1/hacks/:id', () => {
     expect(resTwo.body.data.title).toBe('Test Hack Two');
   });
 });
-describe('GET /api/v1/hacks/:id/targets', () => {
-  it('should return a 200 status and a hack target', async () => {
-    const userRes = await request(app).post('/user').send({
-      username: 'test',
-      password: 'test',
-    });
-
-    await prisma.user.update({
-      where: { id: userRes.body.data.id },
-      data: { role: 'ADMIN' },
-    });
-
-    const hackOneRes = await request(app)
-      .post('/admin/hacks/create')
-      .auth(userRes.body.data.token, { type: 'bearer' })
-      .send({
-        title: 'Test Hack One',
-        description: 'Test Description',
-      });
-    const hackTwoRes = await request(app)
-      .post('/admin/hacks/create')
-      .auth(userRes.body.data.token, { type: 'bearer' })
-      .send({
-        title: 'Test Hack Two',
-        description: 'Test Description',
-      });
-
-    await prisma.user.update({
-      where: { id: userRes.body.data.id },
-      data: { role: 'USER' },
-    });
-
-    const resOne = await request(app)
-      .get(`/api/v1/hacks/${hackOneRes.body.data.id}/targets`)
-      .auth(userRes.body.data.token, { type: 'bearer' });
-
-    expect(resOne.status).toBe(200);
-    expect(resOne.body.data).toBeInstanceOf(Object);
-    expect(resOne.body.data.targetedCharacters).toBeInstanceOf(Array);
-    expect(resOne.body.data.targetedOrganizations).toBeInstanceOf(Array);
-  });
-});
-// describe('GET /api/v1/hacks/:id/hackers', () => {});
-// describe('GET /api/v1/hacks/:id/targets', () => {});
