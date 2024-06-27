@@ -33,13 +33,12 @@ model User {
 }
 
 model Character {
-  id           Int        @id @default(autoincrement())
-  name         String     @unique @db.VarChar(255)
-  knownAliases String[]
-  imageUrl     String
-  bio          String
-  skillLevel   SkillLevel
-
+  id              Int                   @id @default(autoincrement())
+  name            String                @unique @db.VarChar(255)
+  knownAliases    String[]
+  imageUrl        String
+  bio             String
+  skillLevel      SkillLevel
   hacksAsHacker   HackContributor[]
   hacksTargetedBy HackTargetCharacter[]
   quotes          Quote[]
