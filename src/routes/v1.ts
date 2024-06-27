@@ -21,6 +21,7 @@ import {
   getHackById,
   getHackHackers,
   getHackTargets,
+  updateHack,
 } from '../handlers/hacks';
 import {
   handleInputErrors,
@@ -81,7 +82,7 @@ adminRouter.post(
   handleInputErrors,
   createHack
 );
-// adminRouter.put('/hacks/update/:id', updateHack);
+adminRouter.put('/hacks/update/:id', updateHack);
 // adminRouter.delete('/hacks/delete/:id', deleteHack);
 // adminRouter.post(
 //   '/hacks/:id/targets',
