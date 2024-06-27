@@ -20,8 +20,6 @@ const kate = {
 };
 
 describe('GET /api/v1/characters', () => {
-  beforeAll(async () => {});
-
   it('should return a 200 and an array of characters', async () => {
     const userResponse = await request(app).post('/user').send({
       username: 'adminX',
@@ -36,11 +34,11 @@ describe('GET /api/v1/characters', () => {
       },
     });
     await request(app)
-      .post('/admin/characters/create')
+      .post('/admin/characters')
       .auth(userResponse.body.data.token, { type: 'bearer' })
       .send(dade);
     await request(app)
-      .post('/admin/characters/create')
+      .post('/admin/characters')
       .auth(userResponse.body.data.token, { type: 'bearer' })
       .send(kate);
 
@@ -75,11 +73,11 @@ describe('GET /api/v1/characters/:id', () => {
       },
     });
     const dadeResponse = await request(app)
-      .post('/admin/characters/create')
+      .post('/admin/characters')
       .auth(userResponse.body.data.token, { type: 'bearer' })
       .send(dade);
     const kateResponse = await request(app)
-      .post('/admin/characters/create')
+      .post('/admin/characters')
       .auth(userResponse.body.data.token, { type: 'bearer' })
       .send(kate);
 
