@@ -36,16 +36,6 @@ export const validateOrganizationCreationInputs = [
 export const validateHackCreationInputs = [
   body('title').trim().notEmpty().isString().escape(),
   body('description').trim().notEmpty().isString().escape(),
-  body('characterTargetId').optional().isInt(),
-  body('organizationTargetId').optional().isInt(),
-  body().custom((_, { req }) => {
-    if (!req.body.characterTargetId && !req.body.organizationTargetId) {
-      throw new Error(
-        'Either characterTargetId or organizationTargetId must be provided on a hack.'
-      );
-    }
-    return true;
-  }),
 ];
 
 export const handleInputErrors = (
