@@ -7,23 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  USER
-  ADMIN
-}
-
-enum TargetType {
-  CHARACTER
-  ORGANIZATION
-}
-
-enum SkillLevel {
-  BEGINNER
-  INTERMEDIATE
-  ADVANCED
-  ELITE
-}
-
 model User {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
@@ -63,16 +46,16 @@ model Hack {
 
 model Quote {
   id          Int       @id @default(autoincrement())
-  text        String
   characterId Int
+  text        String
   character   Character @relation(fields: [characterId], references: [id])
 }
 
 model HackContributor {
   hackId      Int
   characterId Int
-  hack        Hack      @relation(fields: [hackId], references: [id])
   character   Character @relation(fields: [characterId], references: [id])
+  hack        Hack      @relation(fields: [hackId], references: [id])
 
   @@id([hackId, characterId])
 }
@@ -80,8 +63,8 @@ model HackContributor {
 model HackTargetCharacter {
   hackId      Int
   characterId Int
-  hack        Hack      @relation(fields: [hackId], references: [id])
   character   Character @relation(fields: [characterId], references: [id])
+  hack        Hack      @relation(fields: [hackId], references: [id])
 
   @@id([hackId, characterId])
 }
@@ -93,4 +76,21 @@ model HackTargetOrganization {
   organization   Organization @relation(fields: [organizationId], references: [id])
 
   @@id([hackId, organizationId])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum TargetType {
+  CHARACTER
+  ORGANIZATION
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  ELITE
 }
