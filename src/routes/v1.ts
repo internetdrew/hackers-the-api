@@ -81,6 +81,20 @@ adminRouter.post(
   handleInputErrors,
   createHack
 );
+// adminRouter.put('/hacks/update/:id', updateHack);
+// adminRouter.delete('/hacks/delete/:id', deleteHack);
+// adminRouter.post(
+//   '/hacks/:id/targets',
+//   validateHackTargetCreationInputs,
+//   handleInputErrors,
+//   createHackTarget
+// );
+// adminRouter.post(
+//   '/hacks/:id/hackers',
+//   validateHackContributorCreationInputs,
+//   handleInputErrors,
+//   createHackContributor
+// );
 
 /* Admin (Users) */
 adminRouter.put('/authorize', handleInputErrors, authorizeAdmin);
