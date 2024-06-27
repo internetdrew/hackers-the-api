@@ -36,6 +36,35 @@ export const validateOrganizationCreationInputs = [
 export const validateHackCreationInputs = [
   body('title').trim().notEmpty().isString().escape(),
   body('description').trim().notEmpty().isString().escape(),
+  body('targetCharacterId').isInt().optional(),
+  body('targetOrganizationId').isInt().optional(),
+  (req: Request, res: Response, next: NextFunction) => {
+    if (!req.body.targetCharacterId && !req.body.targetOrganizationId) {
+      return res.status(400).json({
+        message: 'Must provide a targetCharacterId or targetOrganizationId.',
+      });
+    }
+    next();
+  },
+];
+
+export const validateHackContributorInput = [
+  body('characterId').isInt(),
+  body('hackId').isInt(),
+];
+
+export const validateHackTargetCreationInputs = [
+  body('hackId').isInt(),
+  body('characterId').optional().isInt(),
+  body('organizationId').optional().isInt(),
+  (req: Request, res: Response, next: NextFunction) => {
+    if (!req.body.characterId && !req.body.organizationId) {
+      return res
+        .status(400)
+        .json({ message: 'Must provide a characterId or organizationId.' });
+    }
+    next();
+  },
 ];
 
 export const handleInputErrors = (
