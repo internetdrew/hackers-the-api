@@ -31,11 +31,11 @@ describe('GET /api/v1/organizations', () => {
       },
     });
     await request(app)
-      .post('/admin/organizations/create')
+      .post('/admin/organizations')
       .auth(userResponse.body.data.token, { type: 'bearer' })
       .send(ellingson);
     await request(app)
-      .post('/admin/organizations/create')
+      .post('/admin/organizations')
       .auth(userResponse.body.data.token, { type: 'bearer' })
       .send(cyberdelia);
 
@@ -73,11 +73,11 @@ describe('GET /api/v1/organizations/:id', () => {
       },
     });
     const ellingsonRes = await request(app)
-      .post('/admin/organizations/create')
+      .post('/admin/organizations')
       .auth(userResponse.body.data.token, { type: 'bearer' })
       .send(ellingson);
     const cyberdeliaRes = await request(app)
-      .post('/admin/organizations/create')
+      .post('/admin/organizations')
       .auth(userResponse.body.data.token, { type: 'bearer' })
       .send(cyberdelia);
 
