@@ -1,6 +1,6 @@
 # Hackers, The Unofficial Movie API
 
-An API based on the 1995 movie Hackers. Get information on characters, organizations, hacks, quotes, and more. Inspired by the continued work of [Cyberdelia NYC](https://www.cyberdelianyc.com/). Hack the planet!
+An API based on the 1995 movie Hackers. Get information on characters, organizations, hacks, quotes, and more. Inspired by the continued maintenance of [Cyberdelia NYC](https://www.cyberdelianyc.com/) by fellow fans. **Hack the planet!**
 
 ![Image from Hackers movie](./server/public/assets/hackers.jpg)
 
