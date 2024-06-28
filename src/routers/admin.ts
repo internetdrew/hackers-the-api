@@ -16,7 +16,12 @@ import {
   deleteOrganization,
   updateOrganization,
 } from '../handlers/organizations';
-import { createHack, addHackContributor, updateHack } from '../handlers/hacks';
+import {
+  createHack,
+  addHackContributor,
+  updateHack,
+  deleteHack,
+} from '../handlers/hacks';
 import { authorizeAdmin } from '../handlers/user';
 
 const adminRouter = Router();
@@ -55,19 +60,14 @@ adminRouter.post(
   createHack
 );
 adminRouter.patch('/hacks/:id', updateHack);
+adminRouter.delete('/hacks/:id', deleteHack);
+
 adminRouter.post(
   '/hacks/:id/contribution',
   validateHackContributorInput,
   handleInputErrors,
   addHackContributor
 );
-// adminRouter.post(
-//   '/hacks/:id/hackers',
-//   validateHackContributorCreationInputs,
-//   handleInputErrors,
-//   createHackContributor
-// );
-// adminRouter.delete('/hacks/delete/:id', deleteHack);
 
 /* Admin (Users) */
 adminRouter.patch('/authorize', handleInputErrors, authorizeAdmin);
