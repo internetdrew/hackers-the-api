@@ -3,7 +3,6 @@ import request from 'supertest';
 import app from '../server';
 import createTestOrganization from './helpers/createTestOrganization';
 import updateUserRole from './helpers/updateUserRole';
-import e from 'express';
 
 const dade = {
   name: 'Dade Murphy',
