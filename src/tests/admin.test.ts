@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import request from 'supertest';
 import app from '../server';
-import prisma from '../db';
 import createTestOrganization from './helpers/createTestOrganization';
-import makeUserRole from './helpers/makeUserRole';
+import updateUserRole from './helpers/updateUserRole';
+import e from 'express';
 
 const dade = {
   name: 'Dade Murphy',
@@ -47,7 +47,7 @@ describe('Authorization', () => {
         password: 'weakpassword',
       });
 
-      await makeUserRole({ userId: typicalUser.body.data.id, role: 'ADMIN' });
+      await updateUserRole({ userId: typicalUser.body.data.id, role: 'ADMIN' });
       const userId = typicalUser.body.data.id;
 
       const response = await request(app)
@@ -66,7 +66,7 @@ describe('Authorization', () => {
         password: 'weakpassword',
       });
 
-      await makeUserRole({ userId: adminUser.body.data.id, role: 'ADMIN' });
+      await updateUserRole({ userId: adminUser.body.data.id, role: 'ADMIN' });
 
       const nonAdminUser = await request(app).post('/user').send({
         username: 'nonAdminUser',
@@ -108,7 +108,7 @@ describe('Characters', () => {
         password: 'weakpassword',
       });
 
-      await makeUserRole({ userId: typicalUser.body.data.id, role: 'ADMIN' });
+      await updateUserRole({ userId: typicalUser.body.data.id, role: 'ADMIN' });
 
       const response = await request(app)
         .post('/admin/characters')
@@ -131,7 +131,10 @@ describe('Characters', () => {
         password: 'weakpassword',
       });
 
-      await makeUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
+      await updateUserRole({
+        userId: userResponse.body.data.id,
+        role: 'ADMIN',
+      });
 
       await request(app)
         .post('/admin/characters')
@@ -167,7 +170,10 @@ describe('Characters', () => {
         password: 'adminPassword',
       });
 
-      await makeUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
+      await updateUserRole({
+        userId: userResponse.body.data.id,
+        role: 'ADMIN',
+      });
       const characterRes = await request(app)
         .post('/admin/characters')
         .auth(userResponse.body.data.token, { type: 'bearer' })
@@ -212,14 +218,17 @@ describe('Characters', () => {
     });
   });
 
-  describe('DELETE /admin/characters/delete/:id', () => {
+  describe('DELETE /admin/characters/:id', () => {
     it('should return a 401 when a user is not authorized as an admin', async () => {
       const userResponse = await request(app).post('/user').send({
         username: 'typicalUser',
         password: 'weakpassword',
       });
 
-      await makeUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
+      await updateUserRole({
+        userId: userResponse.body.data.id,
+        role: 'ADMIN',
+      });
 
       const characterRes = await request(app)
         .post('/admin/characters')
@@ -232,7 +241,7 @@ describe('Characters', () => {
           skillLevel: 'ELITE',
         });
 
-      await makeUserRole({ userId: userResponse.body.data.id, role: 'USER' });
+      await updateUserRole({ userId: userResponse.body.data.id, role: 'USER' });
       const characterId = characterRes.body.data.id;
 
       const deletionRes = await request(app)
@@ -255,7 +264,10 @@ describe('Characters', () => {
         password: 'weakpassword',
       });
 
-      await makeUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
+      await updateUserRole({
+        userId: userResponse.body.data.id,
+        role: 'ADMIN',
+      });
 
       const characterRes = await request(app)
         .post('/admin/characters')
@@ -310,7 +322,10 @@ describe('Organizations', () => {
         password: 'adminPassword',
       });
 
-      await makeUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
+      await updateUserRole({
+        userId: userResponse.body.data.id,
+        role: 'ADMIN',
+      });
 
       const organizationRes = await request(app)
         .post('/admin/organizations')
@@ -349,7 +364,10 @@ describe('Organizations', () => {
         password: 'adminPassword',
       });
 
-      await makeUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
+      await updateUserRole({
+        userId: userResponse.body.data.id,
+        role: 'ADMIN',
+      });
 
       const organizationRes = await request(app)
         .post('/admin/organizations')
@@ -382,7 +400,10 @@ describe('Organizations', () => {
         password: 'adminPassword',
       });
 
-      await makeUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
+      await updateUserRole({
+        userId: userResponse.body.data.id,
+        role: 'ADMIN',
+      });
 
       const response = await request(app)
         .patch('/admin/organizations/1000')
@@ -403,7 +424,10 @@ describe('Organizations', () => {
         password: 'adminPassword',
       });
 
-      await makeUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
+      await updateUserRole({
+        userId: userResponse.body.data.id,
+        role: 'ADMIN',
+      });
 
       const organizationRes = await request(app)
         .post('/admin/organizations')
@@ -416,7 +440,7 @@ describe('Organizations', () => {
 
       const orgId = organizationRes.body.data.id;
 
-      await makeUserRole({ userId: userResponse.body.data.id, role: 'USER' });
+      await updateUserRole({ userId: userResponse.body.data.id, role: 'USER' });
 
       const deletionRes = await request(app)
         .del(`/admin/organizations/${orgId}`)
@@ -433,7 +457,10 @@ describe('Organizations', () => {
         password: 'adminPassword',
       });
 
-      await makeUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
+      await updateUserRole({
+        userId: userResponse.body.data.id,
+        role: 'ADMIN',
+      });
 
       const organizationRes = await request(app)
         .post('/admin/organizations')
@@ -461,7 +488,10 @@ describe('Organizations', () => {
         password: 'adminPassword',
       });
 
-      await makeUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
+      await updateUserRole({
+        userId: userResponse.body.data.id,
+        role: 'ADMIN',
+      });
 
       const response = await request(app)
         .del('/admin/organizations/1000')
@@ -498,7 +528,7 @@ describe('Hacks', () => {
         password: 'test',
       });
 
-      await makeUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
+      await updateUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
 
       const orgRes = await createTestOrganization({
         authToken: userRes.body.data.token,
@@ -534,7 +564,7 @@ describe('Hacks', () => {
         password: 'test',
       });
 
-      await makeUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
+      await updateUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
 
       const orgRes = await createTestOrganization({
         authToken: userRes.body.data.token,
@@ -552,7 +582,7 @@ describe('Hacks', () => {
           targetOrganizationId: orgRes.body.data.id,
         });
 
-      await makeUserRole({ userId: userRes.body.data.id, role: 'USER' });
+      await updateUserRole({ userId: userRes.body.data.id, role: 'USER' });
 
       const res = await request(app)
         .put(`/admin/hacks/${hackRes.body.data.id}`)
@@ -571,7 +601,7 @@ describe('Hacks', () => {
         password: 'test',
       });
 
-      await makeUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
+      await updateUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
 
       const orgRes = await createTestOrganization({
         authToken: userRes.body.data.token,
@@ -606,7 +636,7 @@ describe('Hacks', () => {
         password: 'test',
       });
 
-      await makeUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
+      await updateUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
 
       const res = await request(app)
         .patch('/admin/hacks/1000')
@@ -625,7 +655,7 @@ describe('Hacks', () => {
         password: 'test',
       });
 
-      await makeUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
+      await updateUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
 
       const orgRes = await createTestOrganization({
         authToken: userRes.body.data.token,
@@ -639,6 +669,93 @@ describe('Hacks', () => {
         .auth(userRes.body.data.token, { type: 'bearer' })
         .send(dade);
 
+      const kateRes = await request(app)
+        .post('/admin/characters')
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send(kate);
+
+      const hackRes = await request(app)
+        .post('/admin/hacks')
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send({
+          title: 'test_hack',
+          description: 'test_description',
+          targetOrganizationId: orgRes.body.data.id,
+        });
+
+      expect(hackRes.body.data.contributors).toHaveLength(0);
+      await request(app)
+        .post(`/admin/hacks/${hackRes.body.data.id}/contribution`)
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send({
+          characterId: dadeRes.body.data.id,
+          hackId: hackRes.body.data.id,
+        });
+      await request(app)
+        .post(`/admin/hacks/${hackRes.body.data.id}/contribution`)
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send({
+          characterId: kateRes.body.data.id,
+          hackId: hackRes.body.data.id,
+        });
+
+      const newHackRes = await request(app)
+        .get(`/api/v1/hacks/${hackRes.body.data.id}`)
+        .auth(userRes.body.data.token, { type: 'bearer' });
+
+      expect(newHackRes.body.data.contributors).toHaveLength(2);
+    });
+  });
+  describe('DELETE /admin/hacks/:id', () => {
+    it('Should return a 401 status for non-admin users', async () => {
+      const userRes = await request(app).post('/user').send({
+        username: 'test',
+        password: 'test',
+      });
+
+      await updateUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
+
+      const orgRes = await createTestOrganization({
+        authToken: userRes.body.data.token,
+        name: 'Test Organization',
+        description: 'Test Description',
+        imageUrl: 'https://example.com/image.jpg',
+      });
+
+      const hackRes = await request(app)
+        .post('/admin/hacks')
+        .auth(userRes.body.data.token, { type: 'bearer' })
+        .send({
+          title: 'test_hack',
+          description: 'test_description',
+          targetOrganizationId: orgRes.body.data.id,
+        });
+
+      await updateUserRole({ userId: userRes.body.data.id, role: 'USER' });
+
+      const res = await request(app)
+        .del(`/admin/hacks/${hackRes.body.data.id}`)
+        .auth(userRes.body.data.token, { type: 'bearer' });
+
+      expect(res.status).toBe(401);
+      expect(res.body.message).toBe('Not authorized.');
+    });
+
+    it('Should return a 200 status and success message', async () => {
+      const userRes = await request(app).post('/user').send({
+        username: 'test',
+        password: 'test',
+      });
+
+      await updateUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
+
+      const orgRes = await createTestOrganization({
+        authToken: userRes.body.data.token,
+        name: 'Test Organization',
+        description: 'Test Description',
+        imageUrl: 'https://example.com/image.jpg',
+      });
+
       const hackRes = await request(app)
         .post('/admin/hacks')
         .auth(userRes.body.data.token, { type: 'bearer' })
@@ -649,16 +766,16 @@ describe('Hacks', () => {
         });
 
       const res = await request(app)
-        .post(`/admin/hacks/${hackRes.body.data.id}/contribution`)
-        .auth(userRes.body.data.token, { type: 'bearer' })
-        .send({
-          characterId: dadeRes.body.data.id,
-          hackId: hackRes.body.data.id,
-        });
+        .del(`/admin/hacks/${hackRes.body.data.id}`)
+        .auth(userRes.body.data.token, { type: 'bearer' });
+      expect(res.status).toBe(200);
+      expect(res.body.data.message).toEqual('Hack deleted successfully.');
 
-      const newHackRes = await request(app)
+      const getRes = await request(app)
         .get(`/api/v1/hacks/${hackRes.body.data.id}`)
         .auth(userRes.body.data.token, { type: 'bearer' });
+      expect(getRes.status).toBe(404);
+      expect(getRes.body.data.message).toBe('This hack does not exist.');
     });
   });
 });
