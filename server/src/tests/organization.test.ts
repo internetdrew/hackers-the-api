@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import request from 'supertest';
 import app from '../server';
 import prisma from '../db';
+import updateUserRole from './helpers/updateUserRole';
 
 const ellingson = {
   name: 'Ellingson Mineral Company',
@@ -81,15 +82,7 @@ describe('GET /api/v1/organizations/:id', () => {
       .auth(userResponse.body.data.token, { type: 'bearer' })
       .send(cyberdelia);
 
-    await prisma.user.update({
-      where: {
-        id: userResponse.body.data.id,
-      },
-      data: {
-        role: 'USER',
-      },
-    });
-
+    await updateUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
     const ellingsonId = ellingsonRes.body.data.id;
     const cyberdeliaId = cyberdeliaRes.body.data.id;
 
