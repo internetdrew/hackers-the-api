@@ -35,16 +35,16 @@ describe('GET /api/v1/characters', () => {
     });
     await request(app)
       .post('/admin/characters')
-      .auth(userResponse.body.data.token, { type: 'bearer' })
+      .auth(userResponse.body.data.accessToken, { type: 'bearer' })
       .send(dade);
     await request(app)
       .post('/admin/characters')
-      .auth(userResponse.body.data.token, { type: 'bearer' })
+      .auth(userResponse.body.data.accessToken, { type: 'bearer' })
       .send(kate);
 
     const characterResponse = await request(app)
       .get('/api/v1/characters')
-      .auth(userResponse.body.data.token, { type: 'bearer' });
+      .auth(userResponse.body.data.accessToken, { type: 'bearer' });
 
     expect(characterResponse.status).toBe(200);
     expect(characterResponse.body.data).toBeInstanceOf(Array);
@@ -74,11 +74,11 @@ describe('GET /api/v1/characters/:id', () => {
     });
     const dadeResponse = await request(app)
       .post('/admin/characters')
-      .auth(userResponse.body.data.token, { type: 'bearer' })
+      .auth(userResponse.body.data.accessToken, { type: 'bearer' })
       .send(dade);
     const kateResponse = await request(app)
       .post('/admin/characters')
-      .auth(userResponse.body.data.token, { type: 'bearer' })
+      .auth(userResponse.body.data.accessToken, { type: 'bearer' })
       .send(kate);
 
     await prisma.user.update({
@@ -92,7 +92,7 @@ describe('GET /api/v1/characters/:id', () => {
 
     const dadeDataRes = await request(app)
       .get(`/api/v1/characters/${dadeResponse.body.data.id}`)
-      .auth(userResponse.body.data.token, { type: 'bearer' });
+      .auth(userResponse.body.data.accessToken, { type: 'bearer' });
 
     expect(dadeDataRes.status).toBe(200);
     expect(dadeDataRes.body.data.name).toBe('Dade Murphy');
@@ -103,7 +103,7 @@ describe('GET /api/v1/characters/:id', () => {
 
     const kateDataRes = await request(app)
       .get(`/api/v1/characters/${kateResponse.body.data.id}`)
-      .auth(userResponse.body.data.token, { type: 'bearer' });
+      .auth(userResponse.body.data.accessToken, { type: 'bearer' });
 
     expect(kateDataRes.status).toBe(200);
     expect(kateDataRes.body.data.name).toBe('Kate Libby');

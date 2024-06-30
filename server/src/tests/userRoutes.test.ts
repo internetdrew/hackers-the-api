@@ -43,7 +43,8 @@ describe('POST /login', () => {
       password: 'weakpassword123',
     });
     expect(response.status).toBe(200);
-    expect(response.body.token).toBeDefined();
+    expect(response.body.accessToken).toBeDefined();
+    expect(response.body.refreshToken).toBeDefined();
   });
 
   it('should return a 401 when a user logs in with invalid credentials', async () => {

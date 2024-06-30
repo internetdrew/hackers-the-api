@@ -23,7 +23,7 @@ describe('GET /api/v1/hacks', () => {
 
     const orgRes = await request(app)
       .post('/admin/organizations')
-      .auth(userRes.body.data.token, { type: 'bearer' })
+      .auth(userRes.body.data.accessToken, { type: 'bearer' })
       .send({
         name: 'Test Organization',
         description: 'Test Description',
@@ -32,7 +32,7 @@ describe('GET /api/v1/hacks', () => {
 
     await request(app)
       .post('/admin/hacks')
-      .auth(userRes.body.data.token, { type: 'bearer' })
+      .auth(userRes.body.data.accessToken, { type: 'bearer' })
       .send({
         title: 'Test Hack One',
         description: 'Test Description',
@@ -40,7 +40,7 @@ describe('GET /api/v1/hacks', () => {
       });
     await request(app)
       .post('/admin/hacks')
-      .auth(userRes.body.data.token, { type: 'bearer' })
+      .auth(userRes.body.data.accessToken, { type: 'bearer' })
       .send({
         title: 'Test Hack Two',
         description: 'Test Description',
@@ -54,7 +54,7 @@ describe('GET /api/v1/hacks', () => {
 
     const res = await request(app)
       .get('/api/v1/hacks')
-      .auth(userRes.body.data.token, { type: 'bearer' });
+      .auth(userRes.body.data.accessToken, { type: 'bearer' });
     expect(res.status).toBe(200);
     expect(res.body.data).toBeInstanceOf(Array);
     expect(res.body.data.length).toBe(2);
@@ -74,7 +74,7 @@ describe('GET /api/v1/hacks/:id', () => {
 
     const orgRes = await request(app)
       .post('/admin/organizations')
-      .auth(userRes.body.data.token, { type: 'bearer' })
+      .auth(userRes.body.data.accessToken, { type: 'bearer' })
       .send({
         name: 'Test Organization',
         description: 'Test Description',
@@ -83,7 +83,7 @@ describe('GET /api/v1/hacks/:id', () => {
 
     const hackOneRes = await request(app)
       .post('/admin/hacks')
-      .auth(userRes.body.data.token, { type: 'bearer' })
+      .auth(userRes.body.data.accessToken, { type: 'bearer' })
       .send({
         title: 'Test Hack One',
         description: 'Test Description',
@@ -91,7 +91,7 @@ describe('GET /api/v1/hacks/:id', () => {
       });
     const hackTwoRes = await request(app)
       .post('/admin/hacks')
-      .auth(userRes.body.data.token, { type: 'bearer' })
+      .auth(userRes.body.data.accessToken, { type: 'bearer' })
       .send({
         title: 'Test Hack Two',
         description: 'Test Description',
@@ -105,13 +105,13 @@ describe('GET /api/v1/hacks/:id', () => {
 
     const resOne = await request(app)
       .get(`/api/v1/hacks/${hackOneRes.body.data.id}`)
-      .auth(userRes.body.data.token, { type: 'bearer' });
+      .auth(userRes.body.data.accessToken, { type: 'bearer' });
     expect(resOne.status).toBe(200);
     expect(resOne.body.data.title).toBe('Test Hack One');
 
     const resTwo = await request(app)
       .get(`/api/v1/hacks/${hackTwoRes.body.data.id}`)
-      .auth(userRes.body.data.token, { type: 'bearer' });
+      .auth(userRes.body.data.accessToken, { type: 'bearer' });
     expect(resTwo.status).toBe(200);
     expect(resTwo.body.data.title).toBe('Test Hack Two');
   });

@@ -33,11 +33,11 @@ describe('GET /api/v1/organizations', () => {
     });
     await request(app)
       .post('/admin/organizations')
-      .auth(userResponse.body.data.token, { type: 'bearer' })
+      .auth(userResponse.body.data.accessToken, { type: 'bearer' })
       .send(ellingson);
     await request(app)
       .post('/admin/organizations')
-      .auth(userResponse.body.data.token, { type: 'bearer' })
+      .auth(userResponse.body.data.accessToken, { type: 'bearer' })
       .send(cyberdelia);
 
     await prisma.user.update({
@@ -51,7 +51,7 @@ describe('GET /api/v1/organizations', () => {
 
     const organizationResponse = await request(app)
       .get('/api/v1/organizations')
-      .auth(userResponse.body.data.token, { type: 'bearer' });
+      .auth(userResponse.body.data.accessToken, { type: 'bearer' });
 
     expect(organizationResponse.status).toBe(200);
     expect(organizationResponse.body.data).toBeInstanceOf(Array);
@@ -65,6 +65,7 @@ describe('GET /api/v1/organizations/:id', () => {
       username: 'adminY',
       password: 'password',
     });
+
     await prisma.user.update({
       where: {
         id: userResponse.body.data.id,
@@ -75,11 +76,11 @@ describe('GET /api/v1/organizations/:id', () => {
     });
     const ellingsonRes = await request(app)
       .post('/admin/organizations')
-      .auth(userResponse.body.data.token, { type: 'bearer' })
+      .auth(userResponse.body.data.accessToken, { type: 'bearer' })
       .send(ellingson);
     const cyberdeliaRes = await request(app)
       .post('/admin/organizations')
-      .auth(userResponse.body.data.token, { type: 'bearer' })
+      .auth(userResponse.body.data.accessToken, { type: 'bearer' })
       .send(cyberdelia);
 
     await updateUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
@@ -88,14 +89,14 @@ describe('GET /api/v1/organizations/:id', () => {
 
     const ellingsonQueryResponse = await request(app)
       .get(`/api/v1/organizations/${ellingsonId}`)
-      .auth(userResponse.body.data.token, { type: 'bearer' });
+      .auth(userResponse.body.data.accessToken, { type: 'bearer' });
 
     expect(ellingsonQueryResponse.status).toBe(200);
     expect(ellingsonQueryResponse.body.data.name).toBe(ellingson.name);
 
     const cyberdeliaQueryResponse = await request(app)
       .get(`/api/v1/organizations/${cyberdeliaId}`)
-      .auth(userResponse.body.data.token, { type: 'bearer' });
+      .auth(userResponse.body.data.accessToken, { type: 'bearer' });
     expect(cyberdeliaQueryResponse.status).toBe(200);
     expect(cyberdeliaQueryResponse.body.data.name).toBe(cyberdelia.name);
   });

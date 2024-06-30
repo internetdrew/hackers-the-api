@@ -32,7 +32,7 @@ describe('Authorization', () => {
 
       const response = await request(app)
         .put('/admin/authorize')
-        .auth(typicalUser.body.data.token, { type: 'bearer' })
+        .auth(typicalUser.body.data.accessToken, { type: 'bearer' })
         .send({
           id: userId,
         });
@@ -51,7 +51,7 @@ describe('Authorization', () => {
 
       const response = await request(app)
         .patch('/admin/authorize')
-        .auth(typicalUser.body.data.token, { type: 'bearer' })
+        .auth(typicalUser.body.data.accessToken, { type: 'bearer' })
         .send({
           id: userId,
         });
@@ -73,7 +73,7 @@ describe('Authorization', () => {
       });
       const response = await request(app)
         .patch('/admin/authorize')
-        .auth(adminUser.body.data.token, { type: 'bearer' })
+        .auth(adminUser.body.data.accessToken, { type: 'bearer' })
         .send({
           id: nonAdminUser.body.data.id,
         });
@@ -92,7 +92,7 @@ describe('Characters', () => {
 
       const response = await request(app)
         .post('/admin/characters')
-        .auth(typicalUser.body.data.token, { type: 'bearer' })
+        .auth(typicalUser.body.data.accessToken, { type: 'bearer' })
         .send({
           name: 'test_character',
           description: 'test_description',
@@ -111,7 +111,7 @@ describe('Characters', () => {
 
       const response = await request(app)
         .post('/admin/characters')
-        .auth(typicalUser.body.data.token, { type: 'bearer' })
+        .auth(typicalUser.body.data.accessToken, { type: 'bearer' })
         .send({
           name: 'test_character',
           knownAliases: ['Small Fry', 'George Cantstandya', 'The Big Payback'],
@@ -137,7 +137,7 @@ describe('Characters', () => {
 
       await request(app)
         .post('/admin/characters')
-        .auth(userResponse.body.data.token, { type: 'bearer' })
+        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
         .send({
           name: 'test_character',
           knownAliases: ['Small Fry', 'George Cantstandya', 'The Big Payback'],
@@ -148,7 +148,7 @@ describe('Characters', () => {
 
       const authResponse = await request(app)
         .post('/admin/characters')
-        .auth(userResponse.body.data.token, { type: 'bearer' })
+        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
         .send({
           name: 'test_character',
           knownAliases: ['Small Fry', 'George Cantstandya', 'The Big Payback'],
@@ -175,7 +175,7 @@ describe('Characters', () => {
       });
       const characterRes = await request(app)
         .post('/admin/characters')
-        .auth(userResponse.body.data.token, { type: 'bearer' })
+        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
         .send({
           name: 'test_character',
           knownAliases: ['Small Fry', 'George Cantstandya', 'The Big Payback'],
@@ -188,7 +188,7 @@ describe('Characters', () => {
 
       const updatedRes = await request(app)
         .patch(`/admin/characters/${characterRes.body.data.id}`)
-        .auth(userResponse.body.data.token, { type: 'bearer' })
+        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
         .send({
           name: 'updated_character',
         });
@@ -204,7 +204,7 @@ describe('Characters', () => {
       });
       const characterRes = await request(app)
         .post('/admin/characters')
-        .auth(userResponse.body.data.token, { type: 'bearer' })
+        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
         .send({
           name: 'test_character',
           knownAliases: ['Small Fry', 'George Cantstandya', 'The Big Payback'],
@@ -231,7 +231,7 @@ describe('Characters', () => {
 
       const characterRes = await request(app)
         .post('/admin/characters')
-        .auth(userResponse.body.data.token, { type: 'bearer' })
+        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
         .send({
           name: 'test_character',
           knownAliases: ['Small Fry', 'George Cantstandya', 'The Big Payback'],
@@ -245,7 +245,7 @@ describe('Characters', () => {
 
       const deletionRes = await request(app)
         .del(`/admin/characters/${characterId}`)
-        .auth(userResponse.body.data.token, { type: 'bearer' })
+        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
         .send({
           name: 'test_character',
           knownAliases: ['Small Fry', 'George Cantstandya', 'The Big Payback'],
@@ -270,7 +270,7 @@ describe('Characters', () => {
 
       const characterRes = await request(app)
         .post('/admin/characters')
-        .auth(userResponse.body.data.token, { type: 'bearer' })
+        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
         .send({
           name: 'test_character',
           knownAliases: ['Small Fry', 'George Cantstandya', 'The Big Payback'],
@@ -283,7 +283,7 @@ describe('Characters', () => {
 
       const deletionRes = await request(app)
         .del(`/admin/characters/${characterId}`)
-        .auth(userResponse.body.data.token, { type: 'bearer' })
+        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
         .send({
           name: 'test_character',
           knownAliases: ['Small Fry', 'George Cantstandya', 'The Big Payback'],
@@ -306,7 +306,7 @@ describe('Organizations', () => {
       });
 
       const orgRes = await createTestOrganization({
-        authToken: userResponse.body.data.token,
+        authToken: userResponse.body.data.accessToken,
         name: 'Test Organization',
         description: 'Test Description',
         imageUrl: 'https://example.com/image.jpg',
@@ -328,7 +328,7 @@ describe('Organizations', () => {
 
       const organizationRes = await request(app)
         .post('/admin/organizations')
-        .auth(userResponse.body.data.token, { type: 'bearer' })
+        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
         .send({
           name: 'test_organization',
           description: 'test_description',
@@ -347,7 +347,7 @@ describe('Organizations', () => {
       });
       const organizationRes = await request(app)
         .post('/admin/organizations')
-        .auth(userResponse.body.data.token, { type: 'bearer' })
+        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
         .send({
           name: 'test_organization',
           description: 'test_description',
@@ -370,7 +370,7 @@ describe('Organizations', () => {
 
       const organizationRes = await request(app)
         .post('/admin/organizations')
-        .auth(userResponse.body.data.token, { type: 'bearer' })
+        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
         .send({
           name: 'test_organization',
           description: 'test_description',
@@ -382,7 +382,7 @@ describe('Organizations', () => {
 
       const response = await request(app)
         .patch(`/admin/organizations/${organizationRes.body.data.id}`)
-        .auth(userResponse.body.data.token, { type: 'bearer' })
+        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
         .send({
           name: 'updated_organization',
           imageUrl: 'http://super.com/image.jpg',
@@ -406,7 +406,7 @@ describe('Organizations', () => {
 
       const response = await request(app)
         .patch('/admin/organizations/1000')
-        .auth(userResponse.body.data.token, { type: 'bearer' })
+        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
         .send({
           name: 'updated_organization',
           description: 'updated_description',
@@ -430,7 +430,7 @@ describe('Organizations', () => {
 
       const organizationRes = await request(app)
         .post('/admin/organizations')
-        .auth(userResponse.body.data.token, { type: 'bearer' })
+        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
         .send({
           name: 'test_organization',
           description: 'test_description',
@@ -443,7 +443,7 @@ describe('Organizations', () => {
 
       const deletionRes = await request(app)
         .del(`/admin/organizations/${orgId}`)
-        .auth(userResponse.body.data.token, { type: 'bearer' })
+        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
         .send({ id: orgId });
 
       expect(deletionRes.status).toBe(401);
@@ -463,7 +463,7 @@ describe('Organizations', () => {
 
       const organizationRes = await request(app)
         .post('/admin/organizations')
-        .auth(userResponse.body.data.token, { type: 'bearer' })
+        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
         .send({
           name: 'test_organization',
           description: 'test_description',
@@ -474,7 +474,7 @@ describe('Organizations', () => {
 
       const deletionRes = await request(app)
         .del(`/admin/organizations/${orgId}`)
-        .auth(userResponse.body.data.token, { type: 'bearer' })
+        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
         .send({ id: orgId });
 
       expect(deletionRes.status).toBe(200);
@@ -494,7 +494,7 @@ describe('Organizations', () => {
 
       const response = await request(app)
         .del('/admin/organizations/1000')
-        .auth(userResponse.body.data.token, { type: 'bearer' });
+        .auth(userResponse.body.data.accessToken, { type: 'bearer' });
 
       expect(response.status).toBe(404);
       expect(response.body.message).toBe('Organization not found.');
@@ -512,7 +512,7 @@ describe('Hacks', () => {
 
       const hackRes = await request(app)
         .post('/admin/hacks')
-        .auth(userResponse.body.data.token, { type: 'bearer' })
+        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
         .send({
           title: 'test_hack',
           description: 'test_description',
@@ -530,7 +530,7 @@ describe('Hacks', () => {
       await updateUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
 
       const orgRes = await createTestOrganization({
-        authToken: userRes.body.data.token,
+        authToken: userRes.body.data.accessToken,
         name: 'Test Organization',
         description: 'Test Description',
         imageUrl: 'https://example.com/image.jpg',
@@ -538,7 +538,7 @@ describe('Hacks', () => {
 
       await request(app)
         .post('/admin/hacks')
-        .auth(userRes.body.data.token, { type: 'bearer' })
+        .auth(userRes.body.data.accessToken, { type: 'bearer' })
         .send({
           title: 'Test Hack One',
           description: 'Test Description',
@@ -546,7 +546,7 @@ describe('Hacks', () => {
         });
       const res = await request(app)
         .post('/admin/hacks')
-        .auth(userRes.body.data.token, { type: 'bearer' })
+        .auth(userRes.body.data.accessToken, { type: 'bearer' })
         .send({
           title: 'Test Hack One',
           description: 'Test Description',
@@ -566,7 +566,7 @@ describe('Hacks', () => {
       await updateUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
 
       const orgRes = await createTestOrganization({
-        authToken: userRes.body.data.token,
+        authToken: userRes.body.data.accessToken,
         name: 'Test Organization',
         description: 'Test Description',
         imageUrl: 'https://example.com/image.jpg',
@@ -574,7 +574,7 @@ describe('Hacks', () => {
 
       const hackRes = await request(app)
         .post('/admin/hacks')
-        .auth(userRes.body.data.token, { type: 'bearer' })
+        .auth(userRes.body.data.accessToken, { type: 'bearer' })
         .send({
           title: 'test_hack',
           description: 'test_description',
@@ -585,7 +585,7 @@ describe('Hacks', () => {
 
       const res = await request(app)
         .put(`/admin/hacks/${hackRes.body.data.id}`)
-        .auth(userRes.body.data.token, { type: 'bearer' })
+        .auth(userRes.body.data.accessToken, { type: 'bearer' })
         .send({
           title: 'updated_hack',
           description: 'updated_description',
@@ -603,7 +603,7 @@ describe('Hacks', () => {
       await updateUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
 
       const orgRes = await createTestOrganization({
-        authToken: userRes.body.data.token,
+        authToken: userRes.body.data.accessToken,
         name: 'Test Organization',
         description: 'Test Description',
         imageUrl: 'https://example.com/image.jpg',
@@ -611,7 +611,7 @@ describe('Hacks', () => {
 
       const hackRes = await request(app)
         .post('/admin/hacks')
-        .auth(userRes.body.data.token, { type: 'bearer' })
+        .auth(userRes.body.data.accessToken, { type: 'bearer' })
         .send({
           title: 'test_hack',
           description: 'test_description',
@@ -620,7 +620,7 @@ describe('Hacks', () => {
 
       const res = await request(app)
         .patch(`/admin/hacks/${hackRes.body.data.id}`)
-        .auth(userRes.body.data.token, { type: 'bearer' })
+        .auth(userRes.body.data.accessToken, { type: 'bearer' })
         .send({
           title: 'updated_hack',
         });
@@ -639,7 +639,7 @@ describe('Hacks', () => {
 
       const res = await request(app)
         .patch('/admin/hacks/1000')
-        .auth(userRes.body.data.token, { type: 'bearer' })
+        .auth(userRes.body.data.accessToken, { type: 'bearer' })
         .send({
           title: 'updated_hack',
           description: 'updated_description',
@@ -657,7 +657,7 @@ describe('Hacks', () => {
       await updateUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
 
       const orgRes = await createTestOrganization({
-        authToken: userRes.body.data.token,
+        authToken: userRes.body.data.accessToken,
         name: 'Test Organization',
         description: 'Test Description',
         imageUrl: 'https://example.com/image.jpg',
@@ -665,17 +665,17 @@ describe('Hacks', () => {
 
       const dadeRes = await request(app)
         .post('/admin/characters')
-        .auth(userRes.body.data.token, { type: 'bearer' })
+        .auth(userRes.body.data.accessToken, { type: 'bearer' })
         .send(dade);
 
       const kateRes = await request(app)
         .post('/admin/characters')
-        .auth(userRes.body.data.token, { type: 'bearer' })
+        .auth(userRes.body.data.accessToken, { type: 'bearer' })
         .send(kate);
 
       const hackRes = await request(app)
         .post('/admin/hacks')
-        .auth(userRes.body.data.token, { type: 'bearer' })
+        .auth(userRes.body.data.accessToken, { type: 'bearer' })
         .send({
           title: 'test_hack',
           description: 'test_description',
@@ -685,14 +685,14 @@ describe('Hacks', () => {
       expect(hackRes.body.data.contributors).toHaveLength(0);
       await request(app)
         .post(`/admin/hacks/${hackRes.body.data.id}/contribution`)
-        .auth(userRes.body.data.token, { type: 'bearer' })
+        .auth(userRes.body.data.accessToken, { type: 'bearer' })
         .send({
           characterId: dadeRes.body.data.id,
           hackId: hackRes.body.data.id,
         });
       await request(app)
         .post(`/admin/hacks/${hackRes.body.data.id}/contribution`)
-        .auth(userRes.body.data.token, { type: 'bearer' })
+        .auth(userRes.body.data.accessToken, { type: 'bearer' })
         .send({
           characterId: kateRes.body.data.id,
           hackId: hackRes.body.data.id,
@@ -700,7 +700,7 @@ describe('Hacks', () => {
 
       const newHackRes = await request(app)
         .get(`/api/v1/hacks/${hackRes.body.data.id}`)
-        .auth(userRes.body.data.token, { type: 'bearer' });
+        .auth(userRes.body.data.accessToken, { type: 'bearer' });
 
       expect(newHackRes.body.data.contributors).toHaveLength(2);
     });
@@ -715,7 +715,7 @@ describe('Hacks', () => {
       await updateUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
 
       const orgRes = await createTestOrganization({
-        authToken: userRes.body.data.token,
+        authToken: userRes.body.data.accessToken,
         name: 'Test Organization',
         description: 'Test Description',
         imageUrl: 'https://example.com/image.jpg',
@@ -723,7 +723,7 @@ describe('Hacks', () => {
 
       const hackRes = await request(app)
         .post('/admin/hacks')
-        .auth(userRes.body.data.token, { type: 'bearer' })
+        .auth(userRes.body.data.accessToken, { type: 'bearer' })
         .send({
           title: 'test_hack',
           description: 'test_description',
@@ -734,7 +734,7 @@ describe('Hacks', () => {
 
       const res = await request(app)
         .del(`/admin/hacks/${hackRes.body.data.id}`)
-        .auth(userRes.body.data.token, { type: 'bearer' });
+        .auth(userRes.body.data.accessToken, { type: 'bearer' });
 
       expect(res.status).toBe(401);
       expect(res.body.message).toBe('Not authorized.');
@@ -749,7 +749,7 @@ describe('Hacks', () => {
       await updateUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
 
       const orgRes = await createTestOrganization({
-        authToken: userRes.body.data.token,
+        authToken: userRes.body.data.accessToken,
         name: 'Test Organization',
         description: 'Test Description',
         imageUrl: 'https://example.com/image.jpg',
@@ -757,7 +757,7 @@ describe('Hacks', () => {
 
       const hackRes = await request(app)
         .post('/admin/hacks')
-        .auth(userRes.body.data.token, { type: 'bearer' })
+        .auth(userRes.body.data.accessToken, { type: 'bearer' })
         .send({
           title: 'test_hack',
           description: 'test_description',
@@ -766,13 +766,13 @@ describe('Hacks', () => {
 
       const res = await request(app)
         .del(`/admin/hacks/${hackRes.body.data.id}`)
-        .auth(userRes.body.data.token, { type: 'bearer' });
+        .auth(userRes.body.data.accessToken, { type: 'bearer' });
       expect(res.status).toBe(200);
       expect(res.body.data.message).toEqual('Hack deleted successfully.');
 
       const getRes = await request(app)
         .get(`/api/v1/hacks/${hackRes.body.data.id}`)
-        .auth(userRes.body.data.token, { type: 'bearer' });
+        .auth(userRes.body.data.accessToken, { type: 'bearer' });
       expect(getRes.status).toBe(404);
       expect(getRes.body.data.message).toBe('This hack does not exist.');
     });
