@@ -130,7 +130,7 @@ export const updateCharacter = async (req: Request, res: Response) => {
       });
     } else {
       res.status(500).json({
-        error: 'An unexpected error has occurred while updating a character.',
+        error: 'An unexpected error has occurred.',
       });
     }
   }
@@ -158,7 +158,7 @@ export const deleteCharacter = async (req: Request, res: Response) => {
       });
     } else {
       res.status(500).json({
-        error: 'An unexpected error has occurred while deleting a character.',
+        error: 'An unexpected error has occurred.',
       });
     }
   }

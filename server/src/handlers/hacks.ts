@@ -29,7 +29,9 @@ export const getAllHacks = async (req: Request, res: Response) => {
     res.json({ data: hacks });
   } catch (error) {
     timer({ ...metricsLabels, success: 'false' });
-    return res.status(500).json({ error: 'An unexpected error has occurred.' });
+    res.status(500).json({
+      error: 'An unexpected error has occurred.',
+    });
   }
 };
 
@@ -106,7 +108,7 @@ export const createHack = async (req: Request, res: Response) => {
       });
     }
     res.status(500).json({
-      error: 'An unexpected error has occurred while creating a hack.',
+      error: 'An unexpected error has occurred.',
     });
   }
 };
@@ -148,7 +150,7 @@ export const updateHack = async (req: Request, res: Response) => {
       });
     }
     res.status(500).json({
-      error: 'An unexpected error has occurred while updating a hack.',
+      error: 'An unexpected error has occurred.',
     });
   }
 };
@@ -215,13 +217,13 @@ export const addHackContributor = async (req: Request, res: Response) => {
   } catch (error) {
     timer({ ...metricsLabels, success: 'false' });
     res.status(500).json({
-      error: 'An unexpected error has occurred while adding a contributor.',
+      error: 'An unexpected error has occurred.',
     });
   }
 };
 
 export const deleteHack = async (req: Request, res: Response) => {
-  const metricsLabels = { operation: 'addHackContributor' };
+  const metricsLabels = { operation: 'deleteHack' };
   const timer = databaseResponseTimeHistogram.startTimer();
 
   try {
