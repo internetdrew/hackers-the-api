@@ -6,7 +6,7 @@ import rateLimit from 'express-rate-limit';
 import prisma from '../db';
 import { addTokenToResponseCookies, createJWT } from './auth';
 
-interface CustomJwtPayload extends JwtPayload {
+interface verifiedJwtPayload extends JwtPayload {
   id: string;
   username: string;
 }
@@ -115,7 +115,6 @@ export const protect = async (
   } catch (e: any) {
     if (e.name === 'TokenExpiredError') {
       const refreshTokenOnRequest = req.cookies['refreshToken'];
-      console.log('refresh token on request: ', refreshTokenOnRequest);
       if (!refreshTokenOnRequest) {
         return res.status(401).json({ message: 'Unauthorized!' });
       }
@@ -124,7 +123,7 @@ export const protect = async (
         const userData = jwt.verify(
           refreshTokenOnRequest,
           process.env.JWT_SECRET as string
-        ) as CustomJwtPayload;
+        ) as verifiedJwtPayload;
         const newAccessToken = createJWT(
           userData.id,
           userData.username,
@@ -138,14 +137,15 @@ export const protect = async (
         addTokenToResponseCookies(res, 'access', newAccessToken);
         addTokenToResponseCookies(res, 'refresh', newRefreshToken);
 
+        req.headers.authorization = `Bearer ${newAccessToken}`;
         (req as AuthedRequest).user = userData;
         next();
       } catch (error) {
         return res.status(403).json({ message: 'Token cannot be refreshed.' });
       }
+    } else {
+      return res.status(401).json({ message: 'Invalid token.' });
     }
-
-    return res.status(401).json({ message: 'Invalid token.' });
   }
 };
 
