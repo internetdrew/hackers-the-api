@@ -20,8 +20,34 @@ export const createUser = async (req: Request, res: Response) => {
       password: await hashPassword(req.body.password),
     },
   });
-  const token = createJWT(user);
-  res.json({ data: { id: user.id, username: user.username, token } });
+  const accessToken = createJWT(user.id, user.username, 'access');
+  const refreshToken = createJWT(user.id, user.username, 'refresh');
+
+  res.cookie('accessToken', accessToken, {
+    maxAge: 900000,
+    httpOnly: true,
+    domain: 'localhost',
+    path: '/',
+    sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'production',
+  });
+  res.cookie('refreshToken', refreshToken, {
+    maxAge: 365 * 24 * 60 * 60 * 1000,
+    httpOnly: true,
+    domain: 'localhost',
+    path: '/',
+    sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'production',
+  });
+  res.json({
+    data: {
+      id: user.id,
+      username: user.username,
+      createdAt: user.createdAt,
+      accessToken,
+      refreshToken,
+    },
+  });
 };
 
 export const login = async (req: Request, res: Response) => {
@@ -37,8 +63,9 @@ export const login = async (req: Request, res: Response) => {
     return;
   }
 
-  const token = createJWT(user);
-  res.json({ token });
+  const accessToken = createJWT(user.id, user.username, 'access');
+  const refreshToken = createJWT(user.id, user.username, 'refresh');
+  res.json({ accessToken, refreshToken });
 };
 
 export const authorizeAdmin = async (req: Request, res: Response) => {

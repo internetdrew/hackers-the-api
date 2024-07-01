@@ -3,6 +3,7 @@ import morgan from 'morgan';
 import cors from 'cors';
 import compression from 'compression';
 import helmet from 'helmet';
+import cookieParser from 'cookie-parser';
 
 import { createUser, login } from './handlers/user';
 import {
@@ -20,6 +21,7 @@ const app = express();
 
 app.use(compression());
 app.use(helmet());
+app.use(cookieParser());
 
 app.use(express.static('public'));
 app.use(cors());

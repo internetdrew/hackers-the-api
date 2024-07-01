@@ -4,6 +4,12 @@ import { NextFunction, Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import rateLimit from 'express-rate-limit';
 import prisma from '../db';
+import { addTokenToResponseCookies, createJWT } from './auth';
+
+interface CustomJwtPayload extends JwtPayload {
+  id: string;
+  username: string;
+}
 
 export interface AuthedRequest extends Request {
   user: string | JwtPayload;
@@ -94,23 +100,51 @@ export const protect = async (
   const bearer = req.headers.authorization;
 
   if (!bearer) {
-    res.status(401);
-    res.json({ message: 'Unauthorized!' });
-    return;
+    return res.status(401).json({ message: 'Unauthorized!' });
   }
 
   const [_, token] = bearer.split(' ');
   if (!token) {
-    res.status(401);
-    res.json({ message: 'Invalid token.' });
-    return;
+    return res.status(401).json({ message: 'Unauthorized!' });
   }
 
   try {
     const user = jwt.verify(token, process.env.JWT_SECRET as string);
     (req as AuthedRequest).user = user;
     next();
-  } catch (e) {
+  } catch (e: any) {
+    if (e.name === 'TokenExpiredError') {
+      const refreshTokenOnRequest = req.cookies['refreshToken'];
+      console.log('refresh token on request: ', refreshTokenOnRequest);
+      if (!refreshTokenOnRequest) {
+        return res.status(401).json({ message: 'Unauthorized!' });
+      }
+
+      try {
+        const userData = jwt.verify(
+          refreshTokenOnRequest,
+          process.env.JWT_SECRET as string
+        ) as CustomJwtPayload;
+        const newAccessToken = createJWT(
+          userData.id,
+          userData.username,
+          'access'
+        );
+        const newRefreshToken = createJWT(
+          userData.id,
+          userData.username,
+          'refresh'
+        );
+        addTokenToResponseCookies(res, 'access', newAccessToken);
+        addTokenToResponseCookies(res, 'refresh', newRefreshToken);
+
+        (req as AuthedRequest).user = userData;
+        next();
+      } catch (error) {
+        return res.status(403).json({ message: 'Token cannot be refreshed.' });
+      }
+    }
+
     return res.status(401).json({ message: 'Invalid token.' });
   }
 };
