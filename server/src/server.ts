@@ -1,9 +1,10 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import morgan from 'morgan';
 import cors from 'cors';
 import compression from 'compression';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
+import responseTime from 'response-time';
 
 import { createUser, login } from './handlers/user';
 import {
@@ -16,12 +17,27 @@ import {
 
 import v1Router from './routers/v1';
 import adminRouter from './routers/admin';
+import { restResponseTimeHistogram } from './modules/metrics';
 
 const app = express();
 
 app.use(compression());
 app.use(helmet());
 app.use(cookieParser());
+app.use(
+  responseTime((req: Request, res: Response, time: number) => {
+    if (req?.route?.path) {
+      restResponseTimeHistogram.observe(
+        {
+          method: req.method,
+          route: req.route.path,
+          status_code: res.statusCode,
+        },
+        time * 1000
+      );
+    }
+  })
+);
 
 app.use(express.static('public'));
 app.use(cors());
