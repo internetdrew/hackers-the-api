@@ -245,7 +245,7 @@ export const deleteHack = async (req: Request, res: Response) => {
       });
     }
     res.status(500).json({
-      error: 'An unexpected error has occurred while deleting a hack.',
+      error: 'An unexpected error occurred.',
     });
   }
 };
