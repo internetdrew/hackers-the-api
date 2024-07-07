@@ -13,6 +13,18 @@ model User {
   role      Role     @default(USER)
   username  String   @unique
   password  String
+  token     Token?
+}
+
+model Token {
+  id        String   @id @default(cuid())
+  value     String   @unique
+  userId    String   @unique
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
 }
 
 model Organization {
