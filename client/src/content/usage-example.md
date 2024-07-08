@@ -1,5 +1,5 @@
 ```javascript
-// Just add your auth token to your headers on requests
+// Include your auth token in authorization headers on requests.
 
 const res = await fetch(url, {
   method: "GET",
