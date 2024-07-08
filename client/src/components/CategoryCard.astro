@@ -17,7 +17,7 @@ const { title, options } = Astro.props;
     {
       options.map((option) => (
         <li class="api-option">
-          <code>
+          <code class="api-code">
             {option.method} {option.endpoint}
           </code>
           <span>{option.description}</span>
@@ -34,14 +34,6 @@ const { title, options } = Astro.props;
     border: 0.5px solid #6c757d;
     padding: 1rem;
     border-radius: 10px;
-  }
-
-  code {
-    background: #000;
-    border-radius: 5px;
-    color: #40916c;
-    padding: 0.25rem;
-    margin-right: 0.25rem;
   }
 
   .api-options {
