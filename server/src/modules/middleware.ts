@@ -4,12 +4,6 @@ import { NextFunction, Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
 import rateLimit from 'express-rate-limit';
 import prisma from '../db';
-import { addTokenToResponseCookies, createJWT } from './auth';
-
-interface verifiedJwtPayload extends JwtPayload {
-  id: string;
-  username: string;
-}
 
 export interface AuthedRequest extends Request {
   user: string | JwtPayload;
@@ -87,7 +81,7 @@ export const handleInputErrors = (
 };
 
 export const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
+  windowMs: 60 * 1000 * 15,
   max: 100,
   message: 'Too many requests from this IP, please try again after 15 minutes.',
 });
@@ -112,40 +106,8 @@ export const protect = async (
     const user = jwt.verify(token, process.env.JWT_SECRET as string);
     (req as AuthedRequest).user = user;
     next();
-  } catch (e: any) {
-    if (e.name === 'TokenExpiredError') {
-      const refreshTokenOnRequest = req.cookies['refreshToken'];
-      if (!refreshTokenOnRequest) {
-        return res.status(401).json({ message: 'Unauthorized!' });
-      }
-
-      try {
-        const userData = jwt.verify(
-          refreshTokenOnRequest,
-          process.env.JWT_SECRET as string
-        ) as verifiedJwtPayload;
-        const newAccessToken = createJWT(
-          userData.id,
-          userData.username,
-          'access'
-        );
-        const newRefreshToken = createJWT(
-          userData.id,
-          userData.username,
-          'refresh'
-        );
-        addTokenToResponseCookies(res, 'access', newAccessToken);
-        addTokenToResponseCookies(res, 'refresh', newRefreshToken);
-
-        req.headers.authorization = `Bearer ${newAccessToken}`;
-        (req as AuthedRequest).user = userData;
-        next();
-      } catch (error) {
-        return res.status(403).json({ message: 'Token cannot be refreshed.' });
-      }
-    } else {
-      return res.status(401).json({ message: 'Invalid token.' });
-    }
+  } catch (e) {
+    return res.status(401).json({ message: 'Unauthorized!' });
   }
 };
 
@@ -161,15 +123,15 @@ export const isAdmin = async (
     return;
   }
 
-  const user = await prisma.user.findUnique({
+  const adminUser = await prisma.user.findUnique({
     where: {
       id: userDataOnRequest.id,
+      role: 'ADMIN',
     },
   });
 
-  if (user?.role !== 'ADMIN') {
-    res.status(401).json({ message: 'Not authorized.' });
-    return;
+  if (!adminUser) {
+    return res.status(401).json({ message: 'Not authorized.' });
   }
   next();
 };
