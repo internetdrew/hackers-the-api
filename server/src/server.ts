@@ -18,12 +18,21 @@ import {
 import v1Router from './routers/v1';
 import adminRouter from './routers/admin';
 import { restResponseTimeHistogram } from './modules/metrics';
+import { getCurrentUser } from './modules/auth';
 
 const app = express();
 
 app.use(compression());
 app.use(helmet());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(
+  cors({
+    origin: 'http://localhost:4321',
+    credentials: true,
+  })
+);
 app.use(
   responseTime((req: Request, res: Response, time: number) => {
     if (req?.route?.path) {
@@ -40,15 +49,13 @@ app.use(
 );
 
 app.use(express.static('public'));
-app.use(cors());
 app.use(morgan('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/v1', protect, apiLimiter, v1Router);
 app.use('/admin', protect, apiLimiter, isAdmin, adminRouter);
 
 app.post('/user', validateUserInputs, handleInputErrors, createUser);
 app.post('/login', validateUserInputs, handleInputErrors, login);
+app.get('/check-auth', getCurrentUser);
 
 export default app;
