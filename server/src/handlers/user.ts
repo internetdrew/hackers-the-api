@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { comparePasswords, createJWT, hashPassword } from '../modules/auth';
+import { compareValues, createToken, hashValue } from '../modules/auth';
 import prisma from '../db';
 import { databaseResponseTimeHistogram } from '../modules/metrics';
 
@@ -22,27 +22,24 @@ export const createUser = async (req: Request, res: Response) => {
     const user = await prisma.user.create({
       data: {
         username: req.body.username,
-        password: await hashPassword(req.body.password),
+        password: await hashValue(req.body.password),
       },
     });
-    const accessToken = createJWT(user.id, user.username, 'access');
-    const refreshToken = createJWT(user.id, user.username, 'refresh');
-
-    res.cookie('accessToken', accessToken, {
-      maxAge: 900000,
-      httpOnly: true,
-      domain: 'localhost',
-      path: '/',
-      sameSite: 'strict',
-      secure: process.env.NODE_ENV === 'production',
+    const accessToken = createToken(user.id, user.username);
+    await prisma.token.create({
+      data: {
+        value: accessToken,
+        userId: user.id,
+      },
     });
-    res.cookie('refreshToken', refreshToken, {
-      maxAge: 365 * 24 * 60 * 60 * 1000,
+
+    const sessionToken = createToken(user.id, user.username);
+    res.cookie('hackers_api_session_token', sessionToken, {
       httpOnly: true,
       domain: 'localhost',
-      path: '/',
-      sameSite: 'strict',
       secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000,
     });
 
     timer({ ...metricsLabels, success: 'true' });
@@ -52,7 +49,6 @@ export const createUser = async (req: Request, res: Response) => {
         username: user.username,
         createdAt: user.createdAt,
         accessToken,
-        refreshToken,
       },
     });
   } catch (error) {
@@ -74,33 +70,12 @@ export const login = async (req: Request, res: Response) => {
       },
     });
 
-    if (!user || !(await comparePasswords(req.body.password, user.password))) {
-      res.status(401);
-      res.json({ message: 'Invalid credentials.' });
-      return;
+    if (!user || !(await compareValues(req.body.password, user.password))) {
+      return res.status(401).json({ message: 'Invalid credentials.' });
     }
 
-    const accessToken = createJWT(user.id, user.username, 'access');
-    const refreshToken = createJWT(user.id, user.username, 'refresh');
-
-    res.cookie('accessToken', accessToken, {
-      maxAge: 900000,
-      httpOnly: true,
-      domain: 'localhost',
-      path: '/',
-      sameSite: 'strict',
-      secure: process.env.NODE_ENV === 'production',
-    });
-    res.cookie('refreshToken', refreshToken, {
-      maxAge: 365 * 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      domain: 'localhost',
-      path: '/',
-      sameSite: 'strict',
-      secure: process.env.NODE_ENV === 'production',
-    });
     timer({ ...metricsLabels, success: 'true' });
-    res.json({ accessToken, refreshToken });
+    res.json({ data: { userId: user.id, username: user.username } });
   } catch (error) {
     timer({ ...metricsLabels, success: 'false' });
     res.status(500).json({
