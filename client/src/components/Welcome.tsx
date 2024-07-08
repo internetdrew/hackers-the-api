@@ -1,7 +1,9 @@
 import axios from "axios";
 import useSWR from "swr";
-import WarmWelcome from "./WarmWelcome";
+import PersonalizedGreeting from "./PersonalizedGreeting";
 import Forms from "./Forms";
+
+import "../index.css";
 
 const Welcome = () => {
   const fetcher = (url: string) =>
@@ -10,20 +12,25 @@ const Welcome = () => {
         withCredentials: true,
       })
       .then((res) => res.data);
+
   const { data, isLoading } = useSWR(
     "http://localhost:3000/check-auth",
     fetcher,
   );
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return (
+      <p className="loading">
+        <strong>Loading...</strong>
+      </p>
+    );
   }
 
   const username = data?.username;
   const accessToken = data?.accessToken;
 
   return username && accessToken ? (
-    <WarmWelcome username={username} token={accessToken} />
+    <PersonalizedGreeting username={username} token={accessToken} />
   ) : (
     <Forms />
   );

@@ -1,11 +1,8 @@
+import { useState } from "react";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 
 import "../index.css";
-import { useState } from "react";
-import useSWR from "swr";
-import axios from "axios";
-import WarmWelcome from "./WarmWelcome";
 
 const Forms = () => {
   const [activeForm, setActiveForm] = useState<"register" | "login">(

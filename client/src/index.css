@@ -79,3 +79,70 @@
   margin-bottom: 0.5rem;
   text-align: center;
 }
+
+/* Personalized Welcome */
+.personalized-welcome {
+  background-color: #212529;
+  color: #ced4da;
+  border: 0.5px solid #6c757d;
+  padding: 1.5rem;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  margin: 2.5rem auto;
+}
+
+@media screen and (min-width: 768px) {
+  .personalized-welcome {
+    width: 50%;
+  }
+}
+
+.username {
+  color: #3a8361;
+}
+
+.input-control {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1rem;
+}
+
+.token-input-container {
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #f8f9fa;
+  color: #343a40;
+  padding: 0.25rem;
+  border-radius: 5px;
+  margin-top: 0.25rem;
+
+  input {
+    border: none;
+    width: 100%;
+    background-color: transparent;
+    user-select: none;
+  }
+
+  button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.125rem;
+    background-color: transparent;
+    border: none;
+  }
+}
+
+.loading {
+  color: #3a8361;
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.greeting {
+  font-size: 1.2rem;
+}
