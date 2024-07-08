@@ -6,6 +6,7 @@ import * as z from "zod";
 import "../index.css";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useSWRConfig } from "swr";
 
 type RegistrationInputs = {
   username: string;
@@ -31,6 +32,7 @@ const RegisterForm = ({
 }: {
   setActiveForm: React.Dispatch<React.SetStateAction<"register" | "login">>;
 }) => {
+  const { mutate } = useSWRConfig();
   const [errorOnPost, setErrorOnPost] = useState(false);
   const {
     register,
@@ -43,17 +45,12 @@ const RegisterForm = ({
 
   const onSubmit: SubmitHandler<RegistrationInputs> = async (data) => {
     try {
-      await axios.post(
-        `${import.meta.env.PUBLIC_API_BASE_URL}/user`,
-        {
-          username: data.username,
-          password: data.password,
-        },
-        {
-          withCredentials: true,
-        },
-      );
+      await axios.post(`${import.meta.env.BASE_URL}/user`, {
+        username: data.username,
+        password: data.password,
+      });
       setErrorOnPost(false);
+      mutate(`${import.meta.env.BASE_URL}/check-auth`);
     } catch (error) {
       setErrorOnPost(true);
       if ((error as AxiosError).response?.status === 409) {

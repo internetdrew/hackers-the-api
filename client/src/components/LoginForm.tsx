@@ -1,6 +1,7 @@
 import axios, { AxiosError } from "axios";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useSWRConfig } from "swr";
 import * as z from "zod";
 
 import "../index.css";
@@ -28,6 +29,7 @@ const LoginForm = ({
 }: {
   setActiveForm: React.Dispatch<React.SetStateAction<"register" | "login">>;
 }) => {
+  const { mutate } = useSWRConfig();
   const {
     register,
     handleSubmit,
@@ -37,14 +39,11 @@ const LoginForm = ({
   });
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     try {
-      await axios.post(
-        `${import.meta.env.PUBLIC_API_BASE_URL}/user`,
-        {
-          username: data.username,
-          password: data.password,
-        },
-        { withCredentials: true },
-      );
+      await axios.post(`${import.meta.env.BASE_URL}/login`, {
+        username: data.username,
+        password: data.password,
+      });
+      mutate(`${import.meta.env.BASE_URL}/check-auth`);
     } catch (error) {
       console.error((error as AxiosError).message);
     }
