@@ -3,6 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import Welcome from "../components/Welcome";
 import CategoryCard from "../components/CategoryCard.astro";
 import apiData from "../lib/apiData";
+import { Content as UsageExample } from "../../src/content/usage-example.md";
 ---
 
 <Layout title="Hackers, The Unofficial Movie API">
@@ -13,7 +14,13 @@ import apiData from "../lib/apiData";
       organizations, quotes, and more.
     </p>
     <Welcome client:load />
-    <section class="endpoints">
+    <section class="section">
+      <h2 class="section-header">Usage</h2>
+      <div class="code-card">
+        <UsageExample />
+      </div>
+    </section>
+    <section class="section">
       <h2 class="section-header">API Endpoints</h2>
       {
         apiData.map((category) => (
@@ -29,6 +36,15 @@ import apiData from "../lib/apiData";
     margin: 0 auto;
     padding: 1rem;
     max-width: 800px;
+  }
+
+  .code-card {
+    background-color: #24292e;
+    color: #ced4da;
+    border: 0.5px solid #6c757d;
+    padding: 1.5rem;
+    border-radius: 10px;
+    font-size: 0.875rem;
   }
 
   .header {
@@ -61,7 +77,7 @@ import apiData from "../lib/apiData";
     color: #40916c;
   }
 
-  .endpoints {
+  .section {
     margin-top: 2rem;
     display: flex;
     flex-direction: column;
