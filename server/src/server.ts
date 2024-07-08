@@ -47,8 +47,6 @@ app.use(
     }
   })
 );
-
-app.use(express.static('public'));
 app.use(morgan('dev'));
 
 app.use('/api/v1', protect, apiLimiter, v1Router);
