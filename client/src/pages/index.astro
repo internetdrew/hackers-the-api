@@ -1,85 +1,70 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import LoginForm from "../components/LoginForm";
-import RegisterForm from "../components/RegisterForm";
+import Welcome from "../components/Welcome";
+import CategoryCard from "../components/CategoryCard.astro";
+import apiData from "../lib/apiData";
 ---
 
 <Layout title="Hackers, The Unofficial Movie API">
   <main>
-    <h1>Hackers, The Unofficial Movie API</h1>
-    <div class="forms-container">
-      <LoginForm client:load />
-      <span class="or">or</span>
-      <RegisterForm client:load />
-    </div>
-    <p class="instructions">
-      To get started, open the directory <code>src/pages</code> in your project.<br
-      />
-      <strong>Code Challenge:</strong> Tweak the "Welcome to Astro" message above.
+    <h1 class="header">Hackers, The Unofficial Movie API</h1>
+    <p class="subtitle">
+      An API for the 1995 movie "Hackers" providing information on characters,
+      organizations, quotes, and more.
     </p>
+    <Welcome client:load />
+    <section class="endpoints">
+      <h2 class="section-header">API Endpoints</h2>
+      {
+        apiData.map((category) => (
+          <CategoryCard title={category.title} options={category.options} />
+        ))
+      }
+    </section>
   </main>
 </Layout>
 
 <style>
   main {
-    margin: auto;
+    margin: 0 auto;
     padding: 1rem;
-    width: 800px;
-    max-width: calc(100% - 2rem);
-    color: white;
-    font-size: 20px;
-    line-height: 1.6;
+    max-width: 800px;
   }
 
-  h1 {
-    font-size: 2rem;
+  .header {
+    font-size: 1.5rem;
     font-weight: 700;
-    line-height: 1;
     text-align: center;
-    margin-bottom: 1em;
+    margin-bottom: 0.5rem;
     color: #40916c;
   }
-  .text-gradient {
-    background-image: var(--accent-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-size: 400%;
-    background-position: 0%;
-  }
-  .instructions {
-    margin-bottom: 2rem;
-    border: 1px solid rgba(var(--accent-light), 25%);
-    background: linear-gradient(
-      rgba(var(--accent-dark), 66%),
-      rgba(var(--accent-dark), 33%)
-    );
-    padding: 1.5rem;
-    border-radius: 8px;
-  }
-  .instructions code {
-    font-size: 0.8em;
-    font-weight: bold;
-    background: rgba(var(--accent-light), 12%);
-    color: rgb(var(--accent-light));
-    border-radius: 4px;
-    padding: 0.3em 0.4em;
-  }
-  .instructions strong {
-    color: rgb(var(--accent-light));
-  }
-  .link-card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(24ch, 1fr));
-    gap: 2rem;
-    padding: 0;
-  }
-  .forms-container {
-    display: flex;
-    gap: 2rem;
-    justify-content: space-between;
+
+  @media screen and (min-width: 481px) {
+    .header {
+      font-size: 2rem;
+    }
   }
 
-  .or {
-    align-self: center;
+  .subtitle {
+    text-align: center;
+    color: #e6e6e6;
+    margin: 0 auto 2rem;
+  }
+
+  @media screen and (min-width: 768px) {
+    .subtitle {
+      max-width: 75%;
+    }
+  }
+
+  .section-header {
+    color: #40916c;
+  }
+
+  .endpoints {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
   }
 </style>
