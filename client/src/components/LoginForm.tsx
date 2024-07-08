@@ -12,8 +12,8 @@ type LoginInputs = {
 
 const loginUserSchema = z
   .object({
-    username: z.string().min(3, { message: "Please enter a username." }),
-    password: z.string().min(1, { message: "Please enter a password." }),
+    username: z.string().min(3, { message: "Please enter your username." }),
+    password: z.string().min(1, { message: "Please enter your password." }),
     passwordConfirmation: z.string().min(1, {
       message: "Please confirm your password.",
     }),
@@ -23,7 +23,11 @@ const loginUserSchema = z
     path: ["passwordConfirmation"],
   });
 
-const LoginForm = () => {
+const LoginForm = ({
+  setActiveForm,
+}: {
+  setActiveForm: React.Dispatch<React.SetStateAction<"register" | "login">>;
+}) => {
   const {
     register,
     handleSubmit,
@@ -46,9 +50,10 @@ const LoginForm = () => {
     }
   };
 
+  const handleFormSwap = () => setActiveForm("register");
   return (
     <div className="form-container">
-      <span>Login</span>
+      <span className="form-title">Login</span>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="formControl">
           <label htmlFor="username">Username</label>
@@ -72,8 +77,12 @@ const LoginForm = () => {
           />
           {errors.password?.message && <small>{errors.password.message}</small>}
         </div>
-        <button type="submit">Login</button>
+        <button type="submit" className="submit-btn">
+          Login
+        </button>
       </form>
+      <small className="or">Don't have an account yet?</small>
+      <button onClick={handleFormSwap}>Register</button>
     </div>
   );
 };

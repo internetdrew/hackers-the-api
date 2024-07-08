@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
 import "../index.css";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 type RegistrationInputs = {
   username: string;
@@ -24,28 +26,53 @@ const registerUserSchema = z
     path: ["passwordConfirmation"],
   });
 
-const RegisterForm = () => {
+const RegisterForm = ({
+  setActiveForm,
+}: {
+  setActiveForm: React.Dispatch<React.SetStateAction<"register" | "login">>;
+}) => {
+  const [errorOnPost, setErrorOnPost] = useState(false);
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    reset,
+    formState: { errors, isSubmitSuccessful },
   } = useForm<RegistrationInputs>({
     resolver: zodResolver(registerUserSchema),
   });
+
   const onSubmit: SubmitHandler<RegistrationInputs> = async (data) => {
     try {
-      await axios.post(`${import.meta.env.PUBLIC_API_BASE_URL}/user`, {
-        username: data.username,
-        password: data.password,
-      });
+      await axios.post(
+        `${import.meta.env.PUBLIC_API_BASE_URL}/user`,
+        {
+          username: data.username,
+          password: data.password,
+        },
+        {
+          withCredentials: true,
+        },
+      );
+      setErrorOnPost(false);
     } catch (error) {
-      console.error((error as AxiosError).message);
+      setErrorOnPost(true);
+      if ((error as AxiosError).response?.status === 409) {
+        toast.error("This user already exists. Try another username.");
+      }
     }
   };
 
+  useEffect(() => {
+    if (!errorOnPost) {
+      reset();
+    }
+  }, [isSubmitSuccessful, errorOnPost]);
+
+  const handleFormSwap = () => setActiveForm("login");
+
   return (
     <div className="form-container">
-      <span>Register</span>
+      <span className="form-title">Create an account</span>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="formControl">
           <label htmlFor="username">Username</label>
@@ -82,8 +109,12 @@ const RegisterForm = () => {
             <small>{errors.passwordConfirmation.message}</small>
           )}
         </div>
-        <button type="submit">Register</button>
+        <button type="submit" className="submit-btn">
+          Register
+        </button>
       </form>
+      <small className="or">Already have an account?</small>
+      <button onClick={handleFormSwap}>Login</button>
     </div>
   );
 };

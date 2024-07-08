@@ -1,0 +1,62 @@
+---
+interface Props {
+  title: string;
+  options: {
+    method: string;
+    endpoint: string;
+    description: string;
+  }[];
+}
+
+const { title, options } = Astro.props;
+---
+
+<article class="category-card">
+  <h3 class="category-title">{title}</h3>
+  <ul class="api-options">
+    {
+      options.map((option) => (
+        <li class="api-option">
+          <code>
+            {option.method} {option.endpoint}
+          </code>
+          <span>{option.description}</span>
+        </li>
+      ))
+    }
+  </ul>
+</article>
+
+<style>
+  .category-card {
+    background-color: #212529;
+    color: #ced4da;
+    border: 0.5px solid #6c757d;
+    padding: 1rem;
+    border-radius: 10px;
+  }
+
+  code {
+    background: #000;
+    border-radius: 5px;
+    color: #40916c;
+    padding: 0.25rem;
+    margin-right: 0.25rem;
+  }
+
+  .api-options {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 0.5rem 0;
+    color: var(--dark);
+  }
+
+  .api-options li {
+    line-height: 1.5;
+    padding: 0.25rem;
+    border-radius: 10px;
+    list-style-type: none;
+  }
+</style>
