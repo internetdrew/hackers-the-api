@@ -14,9 +14,7 @@ export const createUser = async (req: Request, res: Response) => {
       },
     });
     if (userAlreadyExists) {
-      res.status(409);
-      res.json({ message: 'User already exists.' });
-      return;
+      return res.status(409).json({ message: 'User already exists.' });
     }
 
     const user = await prisma.user.create({
@@ -36,7 +34,7 @@ export const createUser = async (req: Request, res: Response) => {
     const sessionToken = createToken(user.id, user.username);
     res.cookie('hackers_api_session_token', sessionToken, {
       httpOnly: true,
-      domain: 'localhost',
+      domain: process.env.DOMAIN,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 24 * 60 * 60 * 1000,
@@ -48,7 +46,6 @@ export const createUser = async (req: Request, res: Response) => {
         id: user.id,
         username: user.username,
         createdAt: user.createdAt,
-        accessToken,
       },
     });
   } catch (error) {
