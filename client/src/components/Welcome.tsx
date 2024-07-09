@@ -6,7 +6,7 @@ import Forms from "./Forms";
 import "../index.css";
 
 const Welcome = () => {
-  const fetcher = (url: string) =>
+  const fetcher = async (url: string) =>
     axios
       .get(url, {
         withCredentials: true,
@@ -14,7 +14,7 @@ const Welcome = () => {
       .then((res) => res.data);
 
   const { data, isLoading } = useSWR(
-    "http://localhost:3000/check-auth",
+    `${import.meta.env.PUBLIC_BASE_URL}/check-auth`,
     fetcher,
   );
 
@@ -30,7 +30,7 @@ const Welcome = () => {
   const accessToken = data?.accessToken;
 
   return username && accessToken ? (
-    <PersonalizedGreeting username={username} token={accessToken} />
+    <PersonalizedGreeting username={username} accessToken={accessToken} />
   ) : (
     <Forms />
   );
