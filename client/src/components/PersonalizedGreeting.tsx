@@ -1,20 +1,19 @@
-import { useState } from "react";
+import toast from "react-hot-toast";
 import { RiHandCoinLine } from "react-icons/ri";
 import { LuCopy } from "react-icons/lu";
 
 import "../index.css";
-import toast from "react-hot-toast";
 
 const PersonalizedGreeting = ({
   username,
-  token,
+  accessToken,
 }: {
   username: string;
-  token: string;
+  accessToken: string;
 }) => {
   const copyAccessToken = () => {
     navigator.clipboard
-      .writeText(token)
+      .writeText(accessToken)
       .then(() => {
         toast.success("Access token copied to clipboard!");
       })
@@ -26,7 +25,10 @@ const PersonalizedGreeting = ({
   return (
     <div className="personalized-welcome">
       <p className="greeting">
-        Welcome, <strong className="username">{username}</strong>!
+        <strong>
+          Welcome, <span className="username">{username}</span>
+        </strong>
+        !
       </p>
       <div className="input-control">
         <label id="token-label" htmlFor="accessToken">
@@ -38,7 +40,7 @@ const PersonalizedGreeting = ({
             id="accessToken"
             className="token-display"
             type="password"
-            value={token}
+            value={accessToken}
             disabled
           />
           <button onClick={copyAccessToken}>
