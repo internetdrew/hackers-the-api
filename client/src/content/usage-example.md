@@ -1,5 +1,5 @@
 ```javascript
-// Include your auth token in authorization headers on requests.
+// Include your access token in authorization headers on requests.
 
 const res = await fetch(url, {
   method: "GET",
