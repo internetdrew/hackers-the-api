@@ -45,12 +45,12 @@ const RegisterForm = ({
 
   const onSubmit: SubmitHandler<RegistrationInputs> = async (data) => {
     try {
-      await axios.post(`${import.meta.env.BASE_URL}/user`, {
+      await axios.post(`${import.meta.env.PUBLIC_BASE_URL}/user`, {
         username: data.username,
         password: data.password,
       });
       setErrorOnPost(false);
-      mutate(`${import.meta.env.BASE_URL}/check-auth`);
+      mutate(`${import.meta.env.PUBLIC_BASE_URL}/check-auth`);
     } catch (error) {
       setErrorOnPost(true);
       if ((error as AxiosError).response?.status === 409) {
