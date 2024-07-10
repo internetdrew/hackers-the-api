@@ -14,4 +14,4 @@ RUN npm ci
 
 COPY --chown=node:node . .
 
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "start"]
