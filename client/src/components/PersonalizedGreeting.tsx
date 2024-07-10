@@ -17,7 +17,7 @@ const PersonalizedGreeting = ({
       .then(() => {
         toast.success("Access token copied to clipboard!");
       })
-      .catch((err) => {
+      .catch((_err) => {
         toast.error("Failed to copy access token.");
       });
   };
