@@ -28,8 +28,9 @@ export const createToken = (userId: string, username: string) => {
 export const getCurrentUser = async (req: Request, res: Response) => {
   const sessionToken = req.cookies['hackers_api_session_token'];
   if (!sessionToken) {
-    return res.status(404).json({ message: 'No user found.' });
+    return res.status(200).json({ message: 'No user found.' });
   }
+
   const user = jwt.verify(sessionToken, process.env.JWT_SECRET as string);
   const userId = (user as AuthedPayload).id;
 
@@ -45,6 +46,6 @@ export const getCurrentUser = async (req: Request, res: Response) => {
       accessToken: currentUser?.token?.value,
     });
   } catch (e) {
-    res.status(404).json({ message: 'No user found.' });
+    res.status(404).json({ message: 'Something went wrong.' });
   }
 };
