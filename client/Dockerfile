@@ -1,17 +1,31 @@
-FROM node:16-alpine
+FROM node:lts-alpine AS base
+WORKDIR /app
 
+RUN chown node:node /app
 USER node
 
-RUN mkdir /home/node/src
-
-WORKDIR /home/node/src
-
-RUN rm -rf node_modules dist
-
+# By copying only the package.json and package-lock.json here, we ensure that the following `-deps` steps are independent of the source code.
+# Therefore, the `-deps` steps will be skipped if only the source code changes.
 COPY --chown=node:node package.json package-lock.json ./
 
+FROM base AS prod-deps
+RUN npm ci --omit=dev
+
+FROM base AS build-deps
 RUN npm ci
 
+FROM build-deps AS build
 COPY --chown=node:node . .
+ENV PUBLIC_BASE_URL="http://localhost:3000"
+RUN npm run build
 
-CMD ["npm", "run", "start"]
+FROM base AS runtime
+COPY --from=prod-deps /app/node_modules ./node_modules
+COPY --from=build /app/dist ./dist
+
+ENV HOST=0.0.0.0
+ENV PORT=4321
+
+EXPOSE 4321
+
+CMD ["node", "./dist/server/entry.mjs"]
