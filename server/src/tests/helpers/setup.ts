@@ -3,6 +3,7 @@ import { beforeEach } from 'vitest';
 
 beforeEach(async () => {
   await prisma.$transaction([
+    prisma.token.deleteMany(),
     prisma.hackContribution.deleteMany(),
     prisma.user.deleteMany(),
     prisma.character.deleteMany(),
