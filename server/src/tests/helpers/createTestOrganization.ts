@@ -1,7 +1,7 @@
 import request from 'supertest';
 import app from '../../server';
 
-const createTestOrganization = async ({
+export const createTestOrganization = async ({
   authToken,
   name,
   description,
@@ -22,5 +22,3 @@ const createTestOrganization = async ({
     });
   return orgRes;
 };
-
-export default createTestOrganization;
