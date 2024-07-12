@@ -6,10 +6,7 @@
     "strict": true,
     "lib": ["esnext", "dom"],
     "esModuleInterop": true,
-    "declaration": true,
-    "moduleResolution": "Bundler",
-    "module": "ESNext",
-    "target": "ESNext"
+    "declaration": true
   },
   "include": ["src/**/*.ts"]
 }

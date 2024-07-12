@@ -14,4 +14,4 @@ COPY --from=build /home/node/src/dist ./dist
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 COPY . .
-CMD ["npm", "run", "start"]
+# CMD ["node", "run", "start"]
