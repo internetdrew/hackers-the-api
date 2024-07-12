@@ -1,7 +1,7 @@
 import prisma from '../../db';
 import { Role } from '@prisma/client';
 
-const updateUserRole = async ({
+export const updateUserRole = async ({
   userId,
   role,
 }: {
@@ -17,5 +17,3 @@ const updateUserRole = async ({
     },
   });
 };
-
-export default updateUserRole;
