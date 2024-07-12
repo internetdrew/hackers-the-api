@@ -118,9 +118,7 @@ export const isAdmin = async (
 ) => {
   const userDataOnRequest = (req as AuthedRequest).user;
   if (typeof userDataOnRequest === 'string') {
-    res.status(401);
-    res.json({ message: 'Not authorized.' });
-    return;
+    return res.status(401).json({ message: 'Unauthorized!' });
   }
 
   const adminUser = await prisma.user.findUnique({
@@ -131,7 +129,7 @@ export const isAdmin = async (
   });
 
   if (!adminUser) {
-    return res.status(401).json({ message: 'Not authorized.' });
+    return res.status(401).json({ message: 'Unauthorized!' });
   }
   next();
 };
