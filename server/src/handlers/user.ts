@@ -71,8 +71,22 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).json({ message: 'Invalid credentials.' });
     }
 
+    const sessionToken = createToken(user.id, user.username);
+    res.cookie('hackers_api_session_token', sessionToken, {
+      httpOnly: true,
+      domain: process.env.DOMAIN,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
     timer({ ...metricsLabels, success: 'true' });
-    res.json({ data: { userId: user.id, username: user.username } });
+    res.json({
+      data: {
+        userId: user.id,
+        username: user.username,
+      },
+    });
   } catch (error) {
     timer({ ...metricsLabels, success: 'false' });
     res.status(500).json({
