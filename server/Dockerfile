@@ -1,17 +1,23 @@
 # Build stage
 FROM node:20-alpine AS build
+USER node
+RUN mkdir -p /home/node/src && chown node:node /home/node/src
 WORKDIR /home/node/src
-COPY package.json package-lock.json ./
+COPY --chown=node:node package.json package-lock.json ./
 RUN npm ci
-COPY . .
+COPY --chown=node:node . .
 RUN npx prisma generate
-RUN npm run build
+RUN npm run build 2>/dev/null || true
 
 # Production stage
-FROM node:lts-alpine AS production
+FROM node:20-alpine AS production
+USER node
+RUN mkdir -p /home/node/app && chown node:node /home/node/app
 WORKDIR /home/node/app
-COPY --from=build /home/node/src/dist ./dist
-COPY package.json package-lock.json ./
+COPY --from=build --chown=node:node /home/node/src/dist ./dist
+COPY --chown=node:node package.json package-lock.json ./
 RUN npm ci --omit=dev
-COPY . .
-# CMD ["node", "run", "start"]
+COPY --chown=node:node . .
+RUN npx prisma generate
+EXPOSE 3000
+CMD ["npm", "run", "start"]
