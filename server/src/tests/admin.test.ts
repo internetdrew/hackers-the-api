@@ -6,7 +6,6 @@ import {
   getUserAccessToken,
   updateUserRole,
 } from './helpers';
-import { exponentialBuckets } from 'prom-client';
 
 const dade = {
   name: 'Dade Murphy',
