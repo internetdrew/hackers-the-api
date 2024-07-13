@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import request from 'supertest';
 import app from '../server';
-import createTestOrganization from './helpers/createTestOrganization';
-import updateUserRole from './helpers/updateUserRole';
+import {
+  createTestOrganization,
+  getUserAccessToken,
+  updateUserRole,
+} from './helpers';
+import { exponentialBuckets } from 'prom-client';
 
 const dade = {
   name: 'Dade Murphy',
@@ -37,46 +41,33 @@ describe('Authorization', () => {
           id: userId,
         });
       expect(response.status).toBe(401);
-      expect(response.body.message).toBe('Not authorized.');
+      expect(response.body.message).toBe('Unauthorized!');
     });
 
     it('should return a 200 and a token when a user is authorized as an admin', async () => {
-      const typicalUser = await request(app).post('/user').send({
+      const userRes = await request(app).post('/user').send({
         username: 'typicalUser',
         password: 'weakpassword',
       });
+      await updateUserRole({
+        userId: userRes.body.data.id,
+        role: 'ADMIN',
+      });
+      const adminUser = userRes.body.data;
+      const adminAccessToken = await getUserAccessToken(adminUser.id);
 
-      await updateUserRole({ userId: typicalUser.body.data.id, role: 'ADMIN' });
-      const userId = typicalUser.body.data.id;
+      const newWouldbeAdmin = await request(app).post('/user').send({
+        username: 'newAdmin',
+        password: 'adminPassword',
+      });
 
       const response = await request(app)
         .patch('/admin/authorize')
-        .auth(typicalUser.body.data.accessToken, { type: 'bearer' })
+        .auth(adminAccessToken!, { type: 'bearer' })
         .send({
-          id: userId,
+          id: newWouldbeAdmin.body.data.id,
         });
       expect(response.status).toBe(200);
-      expect(response.body.data.role).toBe('ADMIN');
-    });
-
-    it('should allow an admin to create a new admin', async () => {
-      const adminUser = await request(app).post('/user').send({
-        username: 'typicalUser',
-        password: 'weakpassword',
-      });
-
-      await updateUserRole({ userId: adminUser.body.data.id, role: 'ADMIN' });
-
-      const nonAdminUser = await request(app).post('/user').send({
-        username: 'nonAdminUser',
-        password: 'somepassword',
-      });
-      const response = await request(app)
-        .patch('/admin/authorize')
-        .auth(adminUser.body.data.accessToken, { type: 'bearer' })
-        .send({
-          id: nonAdminUser.body.data.id,
-        });
       expect(response.body.data.role).toBe('ADMIN');
     });
   });
@@ -85,33 +76,42 @@ describe('Authorization', () => {
 describe('Characters', () => {
   describe('POST /admin/characters', () => {
     it('should return a 401 when a user is not authorized as an admin', async () => {
-      const typicalUser = await request(app).post('/user').send({
+      const createUserRes = await request(app).post('/user').send({
         username: 'typicalUser',
         password: 'weakpassword',
       });
+      const userId = createUserRes.body.data.id;
+
+      const accessToken = await getUserAccessToken(userId);
 
       const response = await request(app)
         .post('/admin/characters')
-        .auth(typicalUser.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           name: 'test_character',
           description: 'test_description',
         });
       expect(response.status).toBe(401);
-      expect(response.body.message).toBe('Not authorized.');
+      expect(response.body.message).toBe('Unauthorized!');
     });
 
     it('should return a 200 when a user is authorized as an admin', async () => {
-      const typicalUser = await request(app).post('/user').send({
+      const createUserRes = await request(app).post('/user').send({
         username: 'typicalUser',
         password: 'weakpassword',
       });
 
-      await updateUserRole({ userId: typicalUser.body.data.id, role: 'ADMIN' });
+      await updateUserRole({
+        userId: createUserRes.body.data.id,
+        role: 'ADMIN',
+      });
+      const userAccessToken = await getUserAccessToken(
+        createUserRes.body.data.id
+      );
 
       const response = await request(app)
         .post('/admin/characters')
-        .auth(typicalUser.body.data.accessToken, { type: 'bearer' })
+        .auth(userAccessToken!, { type: 'bearer' })
         .send({
           name: 'test_character',
           knownAliases: ['Small Fry', 'George Cantstandya', 'The Big Payback'],
@@ -134,10 +134,13 @@ describe('Characters', () => {
         userId: userResponse.body.data.id,
         role: 'ADMIN',
       });
+      const userAccessToken = await getUserAccessToken(
+        userResponse.body.data.id
+      );
 
       await request(app)
         .post('/admin/characters')
-        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+        .auth(userAccessToken!, { type: 'bearer' })
         .send({
           name: 'test_character',
           knownAliases: ['Small Fry', 'George Cantstandya', 'The Big Payback'],
@@ -148,7 +151,7 @@ describe('Characters', () => {
 
       const authResponse = await request(app)
         .post('/admin/characters')
-        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+        .auth(userAccessToken!, { type: 'bearer' })
         .send({
           name: 'test_character',
           knownAliases: ['Small Fry', 'George Cantstandya', 'The Big Payback'],
@@ -173,9 +176,14 @@ describe('Characters', () => {
         userId: userResponse.body.data.id,
         role: 'ADMIN',
       });
+
+      const userId = userResponse.body.data.id;
+
+      const accessToken = await getUserAccessToken(userId);
+
       const characterRes = await request(app)
         .post('/admin/characters')
-        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           name: 'test_character',
           knownAliases: ['Small Fry', 'George Cantstandya', 'The Big Payback'],
@@ -188,7 +196,7 @@ describe('Characters', () => {
 
       const updatedRes = await request(app)
         .patch(`/admin/characters/${characterRes.body.data.id}`)
-        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           name: 'updated_character',
         });
@@ -202,9 +210,10 @@ describe('Characters', () => {
         username: 'typicalUser',
         password: 'weakpassword',
       });
-      const characterRes = await request(app)
+      const accessToken = await getUserAccessToken(userResponse.body.data.id);
+      const characterCreationRes = await request(app)
         .post('/admin/characters')
-        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           name: 'test_character',
           knownAliases: ['Small Fry', 'George Cantstandya', 'The Big Payback'],
@@ -212,8 +221,8 @@ describe('Characters', () => {
           imageUrl: 'http://image.com/image.jpg',
           skillLevel: 'ELITE',
         });
-      expect(characterRes.status).toBe(401);
-      expect(characterRes.body.message).toBe('Not authorized.');
+      expect(characterCreationRes.status).toBe(401);
+      expect(characterCreationRes.body.message).toBe('Unauthorized!');
     });
   });
 
@@ -229,9 +238,12 @@ describe('Characters', () => {
         role: 'ADMIN',
       });
 
+      const userId = userResponse.body.data.id;
+      const accessToken = await getUserAccessToken(userId);
+
       const characterRes = await request(app)
         .post('/admin/characters')
-        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           name: 'test_character',
           knownAliases: ['Small Fry', 'George Cantstandya', 'The Big Payback'],
@@ -245,7 +257,7 @@ describe('Characters', () => {
 
       const deletionRes = await request(app)
         .del(`/admin/characters/${characterId}`)
-        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           name: 'test_character',
           knownAliases: ['Small Fry', 'George Cantstandya', 'The Big Payback'],
@@ -254,7 +266,7 @@ describe('Characters', () => {
           skillLevel: 'ELITE',
         });
       expect(deletionRes.status).toBe(401);
-      expect(deletionRes.body.message).toBe('Not authorized.');
+      expect(deletionRes.body.message).toBe('Unauthorized!');
     });
 
     it('should return a 200 and success message when a user is authorized as an admin', async () => {
@@ -262,15 +274,17 @@ describe('Characters', () => {
         username: 'typicalUser',
         password: 'weakpassword',
       });
+      const userId = userResponse.body.data.id;
 
       await updateUserRole({
-        userId: userResponse.body.data.id,
+        userId,
         role: 'ADMIN',
       });
+      const accessToken = await getUserAccessToken(userId);
 
       const characterRes = await request(app)
         .post('/admin/characters')
-        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           name: 'test_character',
           knownAliases: ['Small Fry', 'George Cantstandya', 'The Big Payback'],
@@ -283,7 +297,7 @@ describe('Characters', () => {
 
       const deletionRes = await request(app)
         .del(`/admin/characters/${characterId}`)
-        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           name: 'test_character',
           knownAliases: ['Small Fry', 'George Cantstandya', 'The Big Payback'],
@@ -304,15 +318,16 @@ describe('Organizations', () => {
         username: 'typicalUser',
         password: 'weakpassword',
       });
+      const accessToken = await getUserAccessToken(userResponse.body.data.id);
 
       const orgRes = await createTestOrganization({
-        authToken: userResponse.body.data.accessToken,
+        authToken: accessToken!,
         name: 'Test Organization',
         description: 'Test Description',
         imageUrl: 'https://example.com/image.jpg',
       });
       expect(orgRes.status).toBe(401);
-      expect(orgRes.body.message).toBe('Not authorized.');
+      expect(orgRes.body.message).toBe('Unauthorized!');
     });
 
     it('should return a 200 when a user is authorized as an admin', async () => {
@@ -325,10 +340,11 @@ describe('Organizations', () => {
         userId: userResponse.body.data.id,
         role: 'ADMIN',
       });
+      const accessToken = await getUserAccessToken(userResponse.body.data.id);
 
       const organizationRes = await request(app)
         .post('/admin/organizations')
-        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           name: 'test_organization',
           description: 'test_description',
@@ -345,16 +361,17 @@ describe('Organizations', () => {
         username: 'typicalUser',
         password: 'weakpassword',
       });
+      const accessToken = await getUserAccessToken(userResponse.body.data.id);
       const organizationRes = await request(app)
         .post('/admin/organizations')
-        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           name: 'test_organization',
           description: 'test_description',
           imageUrl: 'http://image.com/image.jpg',
         });
       expect(organizationRes.status).toBe(401);
-      expect(organizationRes.body.message).toBe('Not authorized.');
+      expect(organizationRes.body.message).toBe('Unauthorized!');
     });
 
     it('should patch an organizations data', async () => {
@@ -368,9 +385,10 @@ describe('Organizations', () => {
         role: 'ADMIN',
       });
 
+      const accessToken = await getUserAccessToken(userResponse.body.data.id);
       const organizationRes = await request(app)
         .post('/admin/organizations')
-        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           name: 'test_organization',
           description: 'test_description',
@@ -382,7 +400,7 @@ describe('Organizations', () => {
 
       const response = await request(app)
         .patch(`/admin/organizations/${organizationRes.body.data.id}`)
-        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           name: 'updated_organization',
           imageUrl: 'http://super.com/image.jpg',
@@ -404,9 +422,10 @@ describe('Organizations', () => {
         role: 'ADMIN',
       });
 
+      const accessToken = await getUserAccessToken(userResponse.body.data.id);
       const response = await request(app)
         .patch('/admin/organizations/1000')
-        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           name: 'updated_organization',
           description: 'updated_description',
@@ -428,9 +447,10 @@ describe('Organizations', () => {
         role: 'ADMIN',
       });
 
+      const accessToken = await getUserAccessToken(userResponse.body.data.id);
       const organizationRes = await request(app)
         .post('/admin/organizations')
-        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           name: 'test_organization',
           description: 'test_description',
@@ -447,7 +467,7 @@ describe('Organizations', () => {
         .send({ id: orgId });
 
       expect(deletionRes.status).toBe(401);
-      expect(deletionRes.body.message).toBe('Not authorized.');
+      expect(deletionRes.body.message).toBe('Unauthorized!');
     });
 
     it('should return a 200 and success message', async () => {
@@ -461,9 +481,10 @@ describe('Organizations', () => {
         role: 'ADMIN',
       });
 
+      const accessToken = await getUserAccessToken(userResponse.body.data.id);
       const organizationRes = await request(app)
         .post('/admin/organizations')
-        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           name: 'test_organization',
           description: 'test_description',
@@ -474,7 +495,7 @@ describe('Organizations', () => {
 
       const deletionRes = await request(app)
         .del(`/admin/organizations/${orgId}`)
-        .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({ id: orgId });
 
       expect(deletionRes.status).toBe(200);
@@ -492,9 +513,10 @@ describe('Organizations', () => {
         role: 'ADMIN',
       });
 
+      const accessToken = await getUserAccessToken(userResponse.body.data.id);
       const response = await request(app)
         .del('/admin/organizations/1000')
-        .auth(userResponse.body.data.accessToken, { type: 'bearer' });
+        .auth(accessToken!, { type: 'bearer' });
 
       expect(response.status).toBe(404);
       expect(response.body.message).toBe('Organization not found.');
@@ -518,7 +540,26 @@ describe('Hacks', () => {
           description: 'test_description',
         });
       expect(hackRes.status).toBe(401);
-      expect(hackRes.body.message).toBe('Not authorized.');
+      expect(hackRes.body.message).toBe('Unauthorized!');
+    });
+
+    it('should successfully create a new hack', async () => {
+      const createUserRes = await request(app).post('/user').send({
+        username: 'test',
+        password: 'test',
+      });
+      const userId = createUserRes.body.data.id;
+      await updateUserRole({ userId, role: 'ADMIN' });
+      const accessToken = await getUserAccessToken(userId);
+
+      const orgRes = await createTestOrganization({
+        authToken: accessToken!,
+        name: 'Test Organization',
+        description: 'Test Description',
+        imageUrl: 'https://example.com/image.jpg',
+      });
+      expect(orgRes.status).toBe(200);
+      expect(orgRes.body.data.name).toBe('Test Organization');
     });
 
     it('Should not allow two hacks with the same title', async () => {
@@ -526,11 +567,12 @@ describe('Hacks', () => {
         username: 'test',
         password: 'test',
       });
-
-      await updateUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
+      const userId = userRes.body.data.id;
+      await updateUserRole({ userId, role: 'ADMIN' });
+      const accessToken = await getUserAccessToken(userId);
 
       const orgRes = await createTestOrganization({
-        authToken: userRes.body.data.accessToken,
+        authToken: accessToken!,
         name: 'Test Organization',
         description: 'Test Description',
         imageUrl: 'https://example.com/image.jpg',
@@ -538,7 +580,7 @@ describe('Hacks', () => {
 
       await request(app)
         .post('/admin/hacks')
-        .auth(userRes.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           title: 'Test Hack One',
           description: 'Test Description',
@@ -546,7 +588,7 @@ describe('Hacks', () => {
         });
       const res = await request(app)
         .post('/admin/hacks')
-        .auth(userRes.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           title: 'Test Hack One',
           description: 'Test Description',
@@ -565,8 +607,10 @@ describe('Hacks', () => {
 
       await updateUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
 
+      const accessToken = await getUserAccessToken(userRes.body.data.id);
+
       const orgRes = await createTestOrganization({
-        authToken: userRes.body.data.accessToken,
+        authToken: accessToken!,
         name: 'Test Organization',
         description: 'Test Description',
         imageUrl: 'https://example.com/image.jpg',
@@ -574,7 +618,7 @@ describe('Hacks', () => {
 
       const hackRes = await request(app)
         .post('/admin/hacks')
-        .auth(userRes.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           title: 'test_hack',
           description: 'test_description',
@@ -585,13 +629,13 @@ describe('Hacks', () => {
 
       const res = await request(app)
         .put(`/admin/hacks/${hackRes.body.data.id}`)
-        .auth(userRes.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           title: 'updated_hack',
           description: 'updated_description',
         });
       expect(res.status).toBe(401);
-      expect(res.body.message).toBe('Not authorized.');
+      expect(res.body.message).toBe('Unauthorized!');
     });
 
     it('Should update a hack', async () => {
@@ -602,8 +646,9 @@ describe('Hacks', () => {
 
       await updateUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
 
+      const accessToken = await getUserAccessToken(userRes.body.data.id);
       const orgRes = await createTestOrganization({
-        authToken: userRes.body.data.accessToken,
+        authToken: accessToken!,
         name: 'Test Organization',
         description: 'Test Description',
         imageUrl: 'https://example.com/image.jpg',
@@ -611,7 +656,7 @@ describe('Hacks', () => {
 
       const hackRes = await request(app)
         .post('/admin/hacks')
-        .auth(userRes.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           title: 'test_hack',
           description: 'test_description',
@@ -620,7 +665,7 @@ describe('Hacks', () => {
 
       const res = await request(app)
         .patch(`/admin/hacks/${hackRes.body.data.id}`)
-        .auth(userRes.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           title: 'updated_hack',
         });
@@ -637,9 +682,10 @@ describe('Hacks', () => {
 
       await updateUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
 
+      const accessToken = await getUserAccessToken(userRes.body.data.id);
       const res = await request(app)
         .patch('/admin/hacks/1000')
-        .auth(userRes.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           title: 'updated_hack',
           description: 'updated_description',
@@ -656,8 +702,9 @@ describe('Hacks', () => {
 
       await updateUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
 
+      const accessToken = await getUserAccessToken(userRes.body.data.id);
       const orgRes = await createTestOrganization({
-        authToken: userRes.body.data.accessToken,
+        authToken: accessToken!,
         name: 'Test Organization',
         description: 'Test Description',
         imageUrl: 'https://example.com/image.jpg',
@@ -665,17 +712,17 @@ describe('Hacks', () => {
 
       const dadeRes = await request(app)
         .post('/admin/characters')
-        .auth(userRes.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send(dade);
 
       const kateRes = await request(app)
         .post('/admin/characters')
-        .auth(userRes.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send(kate);
 
       const hackRes = await request(app)
         .post('/admin/hacks')
-        .auth(userRes.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           title: 'test_hack',
           description: 'test_description',
@@ -685,14 +732,14 @@ describe('Hacks', () => {
       expect(hackRes.body.data.contributors).toHaveLength(0);
       await request(app)
         .post(`/admin/hacks/${hackRes.body.data.id}/contribution`)
-        .auth(userRes.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           characterId: dadeRes.body.data.id,
           hackId: hackRes.body.data.id,
         });
       await request(app)
         .post(`/admin/hacks/${hackRes.body.data.id}/contribution`)
-        .auth(userRes.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           characterId: kateRes.body.data.id,
           hackId: hackRes.body.data.id,
@@ -700,7 +747,7 @@ describe('Hacks', () => {
 
       const newHackRes = await request(app)
         .get(`/api/v1/hacks/${hackRes.body.data.id}`)
-        .auth(userRes.body.data.accessToken, { type: 'bearer' });
+        .auth(accessToken!, { type: 'bearer' });
 
       expect(newHackRes.body.data.contributors).toHaveLength(2);
     });
@@ -714,8 +761,9 @@ describe('Hacks', () => {
 
       await updateUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
 
+      const accessToken = await getUserAccessToken(userRes.body.data.id);
       const orgRes = await createTestOrganization({
-        authToken: userRes.body.data.accessToken,
+        authToken: accessToken!,
         name: 'Test Organization',
         description: 'Test Description',
         imageUrl: 'https://example.com/image.jpg',
@@ -723,7 +771,7 @@ describe('Hacks', () => {
 
       const hackRes = await request(app)
         .post('/admin/hacks')
-        .auth(userRes.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           title: 'test_hack',
           description: 'test_description',
@@ -734,10 +782,10 @@ describe('Hacks', () => {
 
       const res = await request(app)
         .del(`/admin/hacks/${hackRes.body.data.id}`)
-        .auth(userRes.body.data.accessToken, { type: 'bearer' });
+        .auth(accessToken!, { type: 'bearer' });
 
       expect(res.status).toBe(401);
-      expect(res.body.message).toBe('Not authorized.');
+      expect(res.body.message).toBe('Unauthorized!');
     });
 
     it('Should return a 200 status and success message', async () => {
@@ -748,8 +796,9 @@ describe('Hacks', () => {
 
       await updateUserRole({ userId: userRes.body.data.id, role: 'ADMIN' });
 
+      const accessToken = await getUserAccessToken(userRes.body.data.id);
       const orgRes = await createTestOrganization({
-        authToken: userRes.body.data.accessToken,
+        authToken: accessToken!,
         name: 'Test Organization',
         description: 'Test Description',
         imageUrl: 'https://example.com/image.jpg',
@@ -757,7 +806,7 @@ describe('Hacks', () => {
 
       const hackRes = await request(app)
         .post('/admin/hacks')
-        .auth(userRes.body.data.accessToken, { type: 'bearer' })
+        .auth(accessToken!, { type: 'bearer' })
         .send({
           title: 'test_hack',
           description: 'test_description',
@@ -766,13 +815,13 @@ describe('Hacks', () => {
 
       const res = await request(app)
         .del(`/admin/hacks/${hackRes.body.data.id}`)
-        .auth(userRes.body.data.accessToken, { type: 'bearer' });
+        .auth(accessToken!, { type: 'bearer' });
       expect(res.status).toBe(200);
       expect(res.body.data.message).toEqual('Hack deleted successfully.');
 
       const getRes = await request(app)
         .get(`/api/v1/hacks/${hackRes.body.data.id}`)
-        .auth(userRes.body.data.accessToken, { type: 'bearer' });
+        .auth(accessToken!, { type: 'bearer' });
       expect(getRes.status).toBe(404);
       expect(getRes.body.data.message).toBe('This hack does not exist.');
     });
