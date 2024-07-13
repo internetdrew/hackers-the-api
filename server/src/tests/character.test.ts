@@ -1,7 +1,8 @@
-import { beforeAll, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import request from 'supertest';
 import app from '../server';
 import prisma from '../db';
+import { getUserAccessToken, updateUserRole } from './helpers';
 
 const dade = {
   name: 'Dade Murphy',
@@ -25,26 +26,23 @@ describe('GET /api/v1/characters', () => {
       username: 'adminX',
       password: 'passwordX',
     });
-    await prisma.user.update({
-      where: {
-        id: userResponse.body.data.id,
-      },
-      data: {
-        role: 'ADMIN',
-      },
-    });
+    await updateUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
+
+    const accessToken = await getUserAccessToken(userResponse.body.data.id);
     await request(app)
       .post('/admin/characters')
-      .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+      .auth(accessToken!, { type: 'bearer' })
       .send(dade);
     await request(app)
       .post('/admin/characters')
-      .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+      .auth(accessToken!, { type: 'bearer' })
       .send(kate);
+
+    await updateUserRole({ userId: userResponse.body.data.id, role: 'USER' });
 
     const characterResponse = await request(app)
       .get('/api/v1/characters')
-      .auth(userResponse.body.data.accessToken, { type: 'bearer' });
+      .auth(accessToken!, { type: 'bearer' });
 
     expect(characterResponse.status).toBe(200);
     expect(characterResponse.body.data).toBeInstanceOf(Array);
@@ -64,35 +62,24 @@ describe('GET /api/v1/characters/:id', () => {
       username: 'user123',
       password: 'password123',
     });
-    await prisma.user.update({
-      where: {
-        id: userResponse.body.data.id,
-      },
-      data: {
-        role: 'ADMIN',
-      },
-    });
+    const userId = userResponse.body.data.id;
+    await updateUserRole({ userId, role: 'ADMIN' });
+
+    const accessToken = await getUserAccessToken(userResponse.body.data.id);
     const dadeResponse = await request(app)
       .post('/admin/characters')
-      .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+      .auth(accessToken!, { type: 'bearer' })
       .send(dade);
     const kateResponse = await request(app)
       .post('/admin/characters')
-      .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+      .auth(accessToken!, { type: 'bearer' })
       .send(kate);
 
-    await prisma.user.update({
-      where: {
-        id: userResponse.body.data.id,
-      },
-      data: {
-        role: 'USER',
-      },
-    });
+    await updateUserRole({ userId, role: 'USER' });
 
     const dadeDataRes = await request(app)
       .get(`/api/v1/characters/${dadeResponse.body.data.id}`)
-      .auth(userResponse.body.data.accessToken, { type: 'bearer' });
+      .auth(accessToken!, { type: 'bearer' });
 
     expect(dadeDataRes.status).toBe(200);
     expect(dadeDataRes.body.data.name).toBe('Dade Murphy');
@@ -103,7 +90,7 @@ describe('GET /api/v1/characters/:id', () => {
 
     const kateDataRes = await request(app)
       .get(`/api/v1/characters/${kateResponse.body.data.id}`)
-      .auth(userResponse.body.data.accessToken, { type: 'bearer' });
+      .auth(accessToken!, { type: 'bearer' });
 
     expect(kateDataRes.status).toBe(200);
     expect(kateDataRes.body.data.name).toBe('Kate Libby');
