@@ -1,0 +1,42 @@
+version: '3.9'
+
+services:
+  client:
+    build:
+      context: ./client
+      args:
+        - PUBLIC_BASE_URL=http://localhost:3000
+    ports:
+      - '4321:4321'
+    volumes:
+      - ./client:/home/node/src
+      - /home/node/src/node_modules
+    depends_on:
+      - server
+
+  server:
+    build:
+      context: ./server
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./server:/home/node/src
+      - /home/node/src/node_modules
+    env_file:
+      - ./server/.env
+
+  db:
+    image: postgres:14.1
+    restart: always
+    container_name: integration-tests-database
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: prisma
+      POSTGRES_PASSWORD: prisma
+      POSTGRES_DB: tests
+    volumes:
+      - db:/var/lib/postgresql/data
+volumes:
+  db:
+    driver: local
