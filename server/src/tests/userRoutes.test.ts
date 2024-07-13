@@ -10,6 +10,7 @@ describe('POST /user', () => {
     });
     expect(res.status).toBe(200);
     expect(res.body.data.username).toBe('test_user_X');
+    expect(res.headers['set-cookie']).toHaveLength(1);
     expect(res.body.data.password).not.toBeDefined();
   });
 
@@ -43,8 +44,9 @@ describe('POST /login', () => {
       password: 'weakpassword123',
     });
     expect(response.status).toBe(200);
-    expect(response.body.accessToken).toBeDefined();
-    expect(response.body.refreshToken).toBeDefined();
+    expect(response.headers['set-cookie']).toHaveLength(1);
+    expect(response.body.data.userId).toBeDefined();
+    expect(response.body.data.username).toBeDefined();
   });
 
   it('should return a 401 when a user logs in with invalid credentials', async () => {
