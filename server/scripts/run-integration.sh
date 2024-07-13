@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-if ! docker ps | grep -q 'integration-tests-prisma'; then
-    echo "🔴 - Database container 'integration-tests-prisma' is not running. Please start the container and try again."
+if ! docker info >/dev/null 2>&1; then
+    echo "🔴 - Docker is not running. Please start Docker and try again."
     exit 1
 fi
 
