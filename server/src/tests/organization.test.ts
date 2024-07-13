@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import request from 'supertest';
 import app from '../server';
 import prisma from '../db';
-import updateUserRole from './helpers/updateUserRole';
+import { getUserAccessToken, updateUserRole } from './helpers';
 
 const ellingson = {
   name: 'Ellingson Mineral Company',
@@ -23,35 +23,28 @@ describe('GET /api/v1/organizations', () => {
       username: 'adminX',
       password: 'passwordX',
     });
-    await prisma.user.update({
-      where: {
-        id: userResponse.body.data.id,
-      },
-      data: {
-        role: 'ADMIN',
-      },
+    await updateUserRole({
+      userId: userResponse.body.data.id,
+      role: 'ADMIN',
     });
+    const accessToken = await getUserAccessToken(userResponse.body.data.id);
     await request(app)
       .post('/admin/organizations')
-      .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+      .auth(accessToken!, { type: 'bearer' })
       .send(ellingson);
     await request(app)
       .post('/admin/organizations')
-      .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+      .auth(accessToken!, { type: 'bearer' })
       .send(cyberdelia);
 
-    await prisma.user.update({
-      where: {
-        id: userResponse.body.data.id,
-      },
-      data: {
-        role: 'USER',
-      },
+    await updateUserRole({
+      userId: userResponse.body.data.id,
+      role: 'USER',
     });
 
     const organizationResponse = await request(app)
       .get('/api/v1/organizations')
-      .auth(userResponse.body.data.accessToken, { type: 'bearer' });
+      .auth(accessToken!, { type: 'bearer' });
 
     expect(organizationResponse.status).toBe(200);
     expect(organizationResponse.body.data).toBeInstanceOf(Array);
@@ -66,37 +59,34 @@ describe('GET /api/v1/organizations/:id', () => {
       password: 'password',
     });
 
-    await prisma.user.update({
-      where: {
-        id: userResponse.body.data.id,
-      },
-      data: {
-        role: 'ADMIN',
-      },
+    await updateUserRole({
+      userId: userResponse.body.data.id,
+      role: 'ADMIN',
     });
+    const accessToken = await getUserAccessToken(userResponse.body.data.id);
     const ellingsonRes = await request(app)
       .post('/admin/organizations')
-      .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+      .auth(accessToken!, { type: 'bearer' })
       .send(ellingson);
     const cyberdeliaRes = await request(app)
       .post('/admin/organizations')
-      .auth(userResponse.body.data.accessToken, { type: 'bearer' })
+      .auth(accessToken!, { type: 'bearer' })
       .send(cyberdelia);
 
-    await updateUserRole({ userId: userResponse.body.data.id, role: 'ADMIN' });
+    await updateUserRole({ userId: userResponse.body.data.id, role: 'USER' });
     const ellingsonId = ellingsonRes.body.data.id;
     const cyberdeliaId = cyberdeliaRes.body.data.id;
 
     const ellingsonQueryResponse = await request(app)
       .get(`/api/v1/organizations/${ellingsonId}`)
-      .auth(userResponse.body.data.accessToken, { type: 'bearer' });
+      .auth(accessToken!, { type: 'bearer' });
 
     expect(ellingsonQueryResponse.status).toBe(200);
     expect(ellingsonQueryResponse.body.data.name).toBe(ellingson.name);
 
     const cyberdeliaQueryResponse = await request(app)
       .get(`/api/v1/organizations/${cyberdeliaId}`)
-      .auth(userResponse.body.data.accessToken, { type: 'bearer' });
+      .auth(accessToken!, { type: 'bearer' });
     expect(cyberdeliaQueryResponse.status).toBe(200);
     expect(cyberdeliaQueryResponse.body.data.name).toBe(cyberdelia.name);
   });
