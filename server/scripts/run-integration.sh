@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
 
-if ! docker info >/dev/null 2>&1; then
-    echo "🔴 - Docker daemon is not running. Please start Docker and try again to run tests."
+if ! docker ps | grep -q 'integration-tests-prisma'; then
+    echo "🔴 - Database container 'integration-tests-prisma' is not running. Please start the container and try again."
     exit 1
 fi
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
 source $DIR/setenv.sh
-docker-compose -f ../docker-compose.yml up -d
 echo '🟡 - Waiting for database to be ready...'
 $DIR/wait-for-it.sh "${TEST_DATABASE_URL}" -- echo '🟢 - Database is ready!'
 export DATABASE_URL=$TEST_DATABASE_URL
