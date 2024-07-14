@@ -39,9 +39,7 @@ cd hackers-the-api/
 cp client/.env.example client/.env && cp server/.env.example server/.env
 ```
 
-4. Add environmental variables (what you need is in their respective .env.example files)
-
-5. Run the containerized app:
+4. Run the containerized app:
 
 ```sh
 docker compose up
