@@ -16,7 +16,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-- Node.js
+- Node.js (v18+)
 - npm
 
 ### Installing
@@ -27,23 +27,42 @@ These instructions will get you a copy of the project up and running on your loc
 git clone https://github.com/internetdrew/hackers-the-api.git
 ```
 
-2. Install NPM packages
+2. Navigate to the directory
 
 ```sh
-npm install
+cd hackers-the-api/
 ```
 
-Built With
+3. Create client and server .env files
 
+```sh
+touch client/.env && touch server/.env
+```
+
+4. Add environmental variables (what you need is in their respective .env.example files)
+
+5. Run the containerized app
+
+```sh
+docker compose up
+```
+
+Built with:
+
+- [Astro](https://astro.build/)
 - [Node.js](https://nodejs.org/)
 - [Express.js](https://expressjs.com/)
 - [Prisma](https://www.prisma.io/)
 
-Monitored With
+Monitored with:
 
 - [Morgan](https://github.com/expressjs/morgan)
 
-Tested With
+Measured with:
+
+- [Prometheus](https://www.npmjs.com/package/prom-client/v/11.5.3)
+
+Tested with:
 
 - [SuperTest](https://www.npmjs.com/package/supertest)
 - [Vitest](https://vitest.dev/)
