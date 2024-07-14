@@ -21,19 +21,19 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Installing
 
-1. Clone the repository
+1. Clone the repository:
 
 ```sh
 git clone https://github.com/internetdrew/hackers-the-api.git
 ```
 
-2. Navigate to the directory
+2. Navigate to the directory:
 
 ```sh
 cd hackers-the-api/
 ```
 
-3. Create client and server .env files
+3. Create client and server .env files:
 
 ```sh
 touch client/.env && touch server/.env
@@ -41,10 +41,18 @@ touch client/.env && touch server/.env
 
 4. Add environmental variables (what you need is in their respective .env.example files)
 
-5. Run the containerized app
+5. Run the containerized app:
 
 ```sh
 docker compose up
+```
+
+### Testing the API
+
+- Navigate to the server directory and run testing (containers must be running for testing):
+
+```sh
+cd server/ && npm run test
 ```
 
 Built with:
