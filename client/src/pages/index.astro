@@ -1,0 +1,86 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Welcome from "../components/Welcome";
+import CategoryCard from "../components/CategoryCard.astro";
+import apiData from "../lib/apiData";
+import { Content as UsageExample } from "../../src/content/example/usage-example.md";
+---
+
+<Layout title="Hackers, The Unofficial Movie API">
+  <main>
+    <h1 class="header">Hackers, The Unofficial Movie API</h1>
+    <p class="subtitle">
+      An API for the 1995 movie "Hackers" providing information on characters,
+      organizations, quotes, and more.
+    </p>
+    <Welcome client:load />
+    <section class="section">
+      <h2 class="section-header">Usage</h2>
+      <div class="code-card">
+        <UsageExample />
+      </div>
+    </section>
+    <section class="section">
+      <h2 class="section-header">API Endpoints</h2>
+      {
+        apiData.map((category) => (
+          <CategoryCard title={category.title} options={category.options} />
+        ))
+      }
+    </section>
+  </main>
+</Layout>
+
+<style>
+  main {
+    margin: 0 auto;
+    padding: 1rem;
+    max-width: 800px;
+  }
+
+  .code-card {
+    background-color: #17191e;
+    color: #ced4da;
+    border: 0.5px solid #6c757d;
+    padding: 1.5rem;
+    border-radius: 10px;
+    font-size: 0.875rem;
+  }
+
+  .header {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.5rem;
+    color: #40916c;
+  }
+
+  @media screen and (min-width: 481px) {
+    .header {
+      font-size: 2rem;
+    }
+  }
+
+  .subtitle {
+    text-align: center;
+    color: #e6e6e6;
+    margin: 0 auto 2rem;
+  }
+
+  @media screen and (min-width: 768px) {
+    .subtitle {
+      max-width: 75%;
+    }
+  }
+
+  .section-header {
+    color: #40916c;
+  }
+
+  .section {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+</style>

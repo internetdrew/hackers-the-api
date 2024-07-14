@@ -1,0 +1,51 @@
+---
+import { Toaster } from "react-hot-toast";
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Astro description" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <Toaster
+      client:idle
+      toastOptions={{
+        style: {
+          fontSize: "0.85rem",
+        },
+      }}
+    />
+    <slot />
+  </body>
+</html>
+<style is:global>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: system-ui, sans-serif;
+    background: #13151a;
+  }
+
+  .api-code {
+    background: #000;
+    border-radius: 5px;
+    color: #40916c;
+    padding: 0.25rem;
+    margin-right: 0.25rem;
+  }
+</style>
