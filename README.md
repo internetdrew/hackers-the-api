@@ -36,7 +36,7 @@ cd hackers-the-api/
 3. Create client and server .env files:
 
 ```sh
-touch client/.env && touch server/.env
+cp client/.env.example client/.env && cp server/.env.example server/.env
 ```
 
 4. Add environmental variables (what you need is in their respective .env.example files)
