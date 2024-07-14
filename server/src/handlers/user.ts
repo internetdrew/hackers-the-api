@@ -1,16 +1,17 @@
 import { Request, Response } from 'express';
 import { compareValues, createToken, hashValue } from '../modules/auth';
-import prisma from '../db';
 import { databaseResponseTimeHistogram } from '../modules/metrics';
+import prisma from '../db';
 
 export const createUser = async (req: Request, res: Response) => {
   const metricsLabels = { operation: 'createUser' };
   const timer = databaseResponseTimeHistogram.startTimer();
 
+  const { username } = req.body;
   try {
     const userAlreadyExists = await prisma.user.findUnique({
       where: {
-        username: req.body.username,
+        username,
       },
     });
     if (userAlreadyExists) {
@@ -34,12 +35,10 @@ export const createUser = async (req: Request, res: Response) => {
     const sessionToken = createToken(user.id, user.username);
     res.cookie('hackers_api_session_token', sessionToken, {
       httpOnly: true,
-      domain: process.env.DOMAIN,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 24 * 60 * 60 * 1000,
     });
-
     timer({ ...metricsLabels, success: 'true' });
     res.json({
       data: {
@@ -74,7 +73,6 @@ export const login = async (req: Request, res: Response) => {
     const sessionToken = createToken(user.id, user.username);
     res.cookie('hackers_api_session_token', sessionToken, {
       httpOnly: true,
-      domain: process.env.DOMAIN,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 24 * 60 * 60 * 1000,
