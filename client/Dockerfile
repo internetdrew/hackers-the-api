@@ -14,8 +14,8 @@ RUN npm ci
 
 FROM build-deps AS build
 COPY --chown=node:node . .
-ARG PUBLIC_BASE_URL
-ENV PUBLIC_BASE_URL=${PUBLIC_BASE_URL}
+ARG PUBLIC_API_URL
+ENV PUBLIC_API_URL=${PUBLIC_API_URL}
 RUN npm run build
 
 FROM base AS runtime

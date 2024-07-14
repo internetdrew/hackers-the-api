@@ -14,7 +14,7 @@ const Welcome = () => {
       .then((res) => res.data);
 
   const { data, isLoading } = useSWR(
-    `${import.meta.env.PUBLIC_BASE_URL}/check-auth`,
+    `${import.meta.env.PUBLIC_API_URL}/check-auth`,
     fetcher,
   );
 
