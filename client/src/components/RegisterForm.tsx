@@ -45,10 +45,16 @@ const RegisterForm = ({
 
   const onSubmit: SubmitHandler<RegistrationInputs> = async (data) => {
     try {
-      await axios.post(`${import.meta.env.PUBLIC_BASE_URL}/user`, {
-        username: data.username,
-        password: data.password,
-      });
+      await axios.post(
+        `${import.meta.env.PUBLIC_BASE_URL}/user`,
+        {
+          username: data.username,
+          password: data.password,
+        },
+        {
+          withCredentials: true,
+        },
+      );
       setErrorOnPost(false);
       mutate(`${import.meta.env.PUBLIC_BASE_URL}/check-auth`);
     } catch (error) {
