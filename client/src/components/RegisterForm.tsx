@@ -1,12 +1,12 @@
 import axios, { AxiosError } from "axios";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-
-import "../index.css";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSWRConfig } from "swr";
+import * as z from "zod";
+
+import "../index.css";
 
 type RegistrationInputs = {
   username: string;
