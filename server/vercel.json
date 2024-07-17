@@ -12,6 +12,5 @@
   ],
   "env": {
     "NODE_ENV": "production"
-  },
-  "excludeFiles": ["node_modules/**", "test/**", "*.md"]
+  }
 }
