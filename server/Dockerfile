@@ -7,7 +7,7 @@ COPY --chown=node:node package.json package-lock.json ./
 RUN npm ci
 COPY --chown=node:node . .
 RUN npx prisma generate
-RUN npm run build 2>/dev/null || true
+RUN npm run build
 
 # Production stage
 FROM node:20-alpine AS production
