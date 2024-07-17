@@ -6,7 +6,10 @@
     "strict": true,
     "lib": ["esnext", "dom"],
     "esModuleInterop": true,
-    "declaration": true
+    "declaration": true,
+    "paths": {
+      "rollup/parseAst": ["./node_modules/rollup/dist/parseAst"]
+    }
   },
   "include": ["src/**/*.ts"]
 }

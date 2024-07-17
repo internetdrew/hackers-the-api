@@ -2,6 +2,7 @@ version: '3.9'
 
 services:
   client:
+    restart: unless-stopped
     build:
       context: ./client
       args:
@@ -15,6 +16,7 @@ services:
       - server
 
   server:
+    restart: unless-stopped
     build:
       context: ./server
     ports:
@@ -37,6 +39,20 @@ services:
       POSTGRES_DB: tests
     volumes:
       - db:/var/lib/postgresql/data
+  # caddy:
+  #   image: caddy/caddy:2.2.1-alpine
+  #   container_name: caddy-services
+  #   restart: unless-stopped
+  #   ports:
+  #     - '80:80'
+  #     - '443:443'
+  #   volumes:
+  #     - $PWD/Caddyfile:/etc/caddy/Caddyfile
+  #     - $PWD/site:/srv
+  #     - caddy_data:/data
+  #     - caddy_config:/config
 volumes:
   db:
     driver: local
+  # caddy_data:
+  # caddy_config:
