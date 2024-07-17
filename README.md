@@ -1,6 +1,6 @@
 # Hackers, The Unofficial Movie API
 
-An API based on the 1995 movie Hackers. Get information on characters, organizations, hacks, quotes, and more. Inspired by the continued maintenance of [Cyberdelia NYC](https://www.cyberdelianyc.com/) and [Hackers Curator](https://hackerscurator.com/) by fellow fans. **Hack the planet!**
+An API based on the 1995 movie "Hackers". Get information on characters, organizations, hacks, quotes, and more. Inspired by the continued maintenance of [Cyberdelia NYC](https://www.cyberdelianyc.com/) and [Hackers Curator](https://hackerscurator.com/) by fellow fans. **Hack the planet!**
 
 ![Image from Hackers movie](./server/public/assets/hackers.jpg)
 
@@ -13,11 +13,11 @@ An API based on the 1995 movie Hackers. Get information on characters, organizat
 
 ## Introduction
 
-Welcome to the unofficial API for the movie "Hackers". This project was created for the love of a fantastic movie. With that, I wanted to create something that reminded me of the internet in the 90s. I create this to contribute to the fandom around Hackers but also to learn some new skills like containerization and get better at testing software. I hope you enjoy taking a look around.
+Welcome to the unofficial API for the movie "Hackers". This project was created for the love of a fantastic movie. With that, I wanted to create something that reminded me of the internet in the 90s. I created this to contribute to the fandom around Hackers but also to learn some new skills like containerization and improve my software testing. I hope you enjoy taking a look around.
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. As a containerized app, you should be able to get up and running with a few simple steps and no need for checking prerequisites.
 
 ### Installing
 
