@@ -3,7 +3,7 @@ hackerstheapi.com {
 		reverse_proxy client:4321
 	}
 
-	handle {
+	handle * {
 		reverse_proxy server:3000
 	}
 }
