@@ -1,7 +1,5 @@
 hackerstheapi.com {
 	root * /var/www/hackers-the-api
-	reverse_proxy server:3000 {
-		header_down Strict-Transport-Security max-age=315336000;
-	}
+	reverse_proxy server:3000
 	file_server
 }
