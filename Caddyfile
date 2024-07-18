@@ -1,6 +1,7 @@
 hackerstheapi.com {
-	root * /var/www/hackers-the-api/client/src/pages/index.astro
-  reverse_proxy server:3000 {
+	reverse_proxy / server:4321
+
+  reverse_proxy * server:3000 {
    header_down Strict-Transport-Security max-age=315336000;
   }
 	file_server
