@@ -1,5 +1,9 @@
 hackerstheapi.com {
-	root * /var/www/hackers-the-api
-	reverse_proxy server:3000
-	file_server
+	handle / {
+		reverse_proxy client:4321
+	}
+
+	handle {
+		reverse_proxy server:3000
+	}
 }
