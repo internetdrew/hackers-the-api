@@ -1,8 +1,11 @@
 hackerstheapi.com {
- reverse_proxy server:3000 {
-  header_down Strict-Transport-Security max-age=315336000;
+ handle / {
+  reverse_proxy client:4321
  }
 
- root * /client/dist
- file_server
+ handle {
+  reverse_proxy server:3000 {
+   header_down Strict-Transport-Security max-age=315336000;
+  }
+ }
 }
