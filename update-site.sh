@@ -1,4 +1,2 @@
 #!/bin/bash
-cd client
-npm run build
-cp -r dist/* ../site/
+cp -r client/dist/* ./site/
