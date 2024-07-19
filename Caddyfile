@@ -1,12 +1,3 @@
 hackerstheapi.com {
-	@frontend {
-		path /
-	}
-
-	reverse_proxy @frontend client:4321
-
-	@backend {
-		not path /
-	}
-	reverse_proxy @backend server:3000
+	reverse_proxy client:4321
 }
