@@ -1,4 +1,4 @@
 hackerstheapi.com {
-	root * /var/www/site
+	root * /var/www/site/client
 	file_server
 }
