@@ -1,3 +1,9 @@
 hackerstheapi.com {
-	reverse_proxy server:3000
+	root * /var/www/hackers-the-api/site
+  file_server
+
+  @backend {
+      not path /
+   }
+  reverse_proxy @backend localhost:3000
 }
