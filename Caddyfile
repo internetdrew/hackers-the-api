@@ -1,7 +1,3 @@
 hackerstheapi.com {
-	@notRoot {
-		not path /
-	}
-	reverse_proxy / client:4321
-	reverse_proxy @notRoot server:3000
+	reverse_proxy client:4321
 }
