@@ -1,6 +1,8 @@
 hackerstheapi.com {
-	root * /srv
-	file_server browse
+	handle {
+		root * /srv/client
+		file_server browse
+	}
 
 	@backend {
 		not path /
