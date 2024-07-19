@@ -1,11 +1,12 @@
 hackerstheapi.com {
-	handle {
-		root * /srv/client
-		file_server browse
+	@frontend {
+		path /
 	}
+
+	reverse_proxy @frontend client:4321
 
 	@backend {
 		not path /
 	}
-	reverse_proxy @backend localhost:3000
+	reverse_proxy @backend server:3000
 }
