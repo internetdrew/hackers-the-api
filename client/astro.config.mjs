@@ -10,7 +10,7 @@ export default defineConfig({
       theme: "houston",
     },
   },
-  output: "server",
+  output: "hybrid",
   adapter: node({
     mode: "standalone",
   }),
