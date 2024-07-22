@@ -1,5 +1,14 @@
 hackerstheapi.com {
-	root * /srv
-	file_server
-	reverse_proxy /* server:3000
+	encode gzip
+
+	handle /* {
+		reverse_proxy server:3000
+	}
+
+	handle {
+		root * /srv
+		try_files {path} /index.html
+
+		file_server
+	}
 }
