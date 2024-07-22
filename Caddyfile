@@ -1,8 +1,8 @@
 hackerstheapi.com {
 	encode gzip
+	root * /srv
+	file_server
 
 	reverse_proxy server:3000
 
-	root * /srv
-	file_server
 }
