@@ -1,7 +1,15 @@
 hackerstheapi.com {
 	encode gzip
 
-	handle /* {
+	handle_path /login* {
+		reverse_proxy server:3000
+	}
+
+	handle_path /user* {
+		reverse_proxy server:3000
+	}
+
+	handle_path /api/* {
 		reverse_proxy server:3000
 	}
 
