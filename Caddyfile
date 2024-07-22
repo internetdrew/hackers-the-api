@@ -1,7 +1,7 @@
 hackerstheapi.com {
 	encode gzip
 
-	reverse_proxy not path / server:3000
+	reverse_proxy server:3000
 
 	handle / {
 		root * /srv
