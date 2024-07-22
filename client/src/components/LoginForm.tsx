@@ -40,7 +40,7 @@ const LoginForm = ({
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
     try {
       await axios.post(
-        `${import.meta.env.PUBLIC_API_URL}/login`,
+        `${import.meta.env.PUBLIC_API_URL}/auth/login`,
         {
           username: data.username,
           password: data.password,
@@ -49,7 +49,7 @@ const LoginForm = ({
           withCredentials: true,
         },
       );
-      mutate(`${import.meta.env.PUBLIC_API_URL}/check-auth`);
+      mutate(`${import.meta.env.PUBLIC_API_URL}/auth/check-auth`);
     } catch (error) {
       console.error((error as AxiosError).message);
     }

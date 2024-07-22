@@ -6,19 +6,12 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import responseTime from 'response-time';
 
-import { createUser, login } from './handlers/user';
-import {
-  apiLimiter,
-  handleInputErrors,
-  isAdmin,
-  protect,
-  validateUserInputs,
-} from './modules/middleware';
+import { apiLimiter, isAdmin, protect } from './modules/middleware';
 
 import v1Router from './routers/v1';
 import adminRouter from './routers/admin';
 import { restResponseTimeHistogram } from './modules/metrics';
-import { getCurrentUser } from './modules/auth';
+import authRouter from './routers/auth';
 
 const app = express();
 
@@ -51,9 +44,6 @@ app.use(morgan('dev'));
 
 app.use('/api/v1', protect, apiLimiter, v1Router);
 app.use('/admin', protect, apiLimiter, isAdmin, adminRouter);
-
-app.post('/user', validateUserInputs, handleInputErrors, createUser);
-app.post('/login', validateUserInputs, handleInputErrors, login);
-app.get('/check-auth', getCurrentUser);
+app.use('/auth', authRouter);
 
 export default app;

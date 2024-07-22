@@ -46,7 +46,7 @@ const RegisterForm = ({
   const onSubmit: SubmitHandler<RegistrationInputs> = async (data) => {
     try {
       await axios.post(
-        `${import.meta.env.PUBLIC_API_URL}/user`,
+        `${import.meta.env.PUBLIC_API_URL}/auth/user`,
         {
           username: data.username,
           password: data.password,
@@ -56,7 +56,7 @@ const RegisterForm = ({
         },
       );
       setErrorOnPost(false);
-      mutate(`${import.meta.env.PUBLIC_API_URL}/check-auth`);
+      mutate(`${import.meta.env.PUBLIC_API_URL}/auth/check-auth`);
     } catch (error) {
       setErrorOnPost(true);
       if ((error as AxiosError).response?.status === 409) {
