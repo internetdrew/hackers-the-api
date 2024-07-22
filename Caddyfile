@@ -1,5 +1,5 @@
 hackerstheapi.com {
 	root * /srv
 	file_server
-	reverse_proxy server:3000
+	reverse_proxy /* server:3000
 }
