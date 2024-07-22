@@ -17,7 +17,7 @@ Welcome to the unofficial API for the movie "Hackers". This project was created 
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. As a containerized app, you should be able to get up and running with a few simple steps and no need for checking prerequisites.
+Get up and running with a few simple steps and no need for checking prerequisites.
 
 ### Installing
 
@@ -33,10 +33,10 @@ git clone https://github.com/internetdrew/hackers-the-api.git .
 cp client/.env.example client/.env && cp server/.env.example server/.env
 ```
 
-3. Spin up the client, server, and testing database:
+3. Spin up all containers:
 
 ```sh
-docker compose up
+docker compose up --build
 ```
 
 ### How to Run API Route Tests
@@ -66,3 +66,9 @@ Tested with:
 
 - [SuperTest](https://www.npmjs.com/package/supertest)
 - [Vitest](https://vitest.dev/)
+
+Deployed with:
+
+- [Docker Compose](https://docs.docker.com/compose/)
+- [Caddy](https://caddyserver.com/)
+- [Digital Ocean](https://www.digitalocean.com/)
