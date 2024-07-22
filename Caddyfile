@@ -3,8 +3,6 @@ hackerstheapi.com {
 
 	reverse_proxy server:3000
 
-	handle / {
-		root * /srv
-		file_server
-	}
+	root * /srv
+	file_server
 }
