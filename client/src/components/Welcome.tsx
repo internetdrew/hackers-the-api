@@ -6,12 +6,6 @@ import Forms from "./Forms";
 import "../index.css";
 
 const Welcome = () => {
-  const baseUrl = import.meta.env.PROD
-    ? "https://hackerstheapi.com"
-    : "http://localhost:3000";
-
-  console.log("production env?: ", import.meta.env.PROD);
-
   const fetcher = async (url: string) =>
     axios
       .get(url, {
@@ -19,7 +13,10 @@ const Welcome = () => {
       })
       .then((res) => res.data);
 
-  const { data, isLoading } = useSWR(`${baseUrl}/auth/check-auth`, fetcher);
+  const { data, isLoading } = useSWR(
+    `${import.meta.env.PUBLIC_API_URL}/auth/check-auth`,
+    fetcher,
+  );
 
   if (isLoading) {
     return (
