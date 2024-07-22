@@ -5,13 +5,13 @@ services:
     restart: unless-stopped
     build:
       context: ./client
-      args:
-        - PUBLIC_API_URL=http://localhost:3000
     ports:
       - '4321:4321'
     volumes:
       - ./client:/home/node/src
       - /home/node/src/node_modules
+    env_file:
+      - ./client/.env
     depends_on:
       - server
 
