@@ -1,11 +1,7 @@
 hackerstheapi.com {
 	encode gzip
 
-	@notroot {
-		not path /
-	}
-
 	root * /srv
-	reverse_proxy @notroot server:3000
+	reverse_proxy server:3000
 	file_server
 }
