@@ -33,11 +33,19 @@ git clone https://github.com/internetdrew/hackers-the-api.git .
 cp client/.env.example client/.env && cp server/.env.example server/.env
 ```
 
-3. Spin up all containers:
+3. Spin up all containers...
 
-```sh
-docker compose up --build
-```
+- ...normally, use this command:
+
+  ```sh
+  docker compose up --build
+  ```
+
+- ...in detached mode (discreetly, in the background):
+
+  ```sh
+   docker compose up -d --build
+  ```
 
 ### How to Run API Route Tests
 
