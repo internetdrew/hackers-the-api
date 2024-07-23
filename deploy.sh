@@ -4,4 +4,4 @@ echo "Pulling latest..."
 git pull
 
 echo "Building the app..."
-docker compose up -d --build
+PUBLIC_API_URL=https://hackerstheapi.com docker-compose up --build
