@@ -26,7 +26,7 @@ const kate = {
 describe('Authorization', () => {
   describe('POST /admin/authorize', () => {
     it('should return a 401 when a user is not authorized as an admin', async () => {
-      const typicalUser = await request(app).post('/user').send({
+      const typicalUser = await request(app).post('/auth/user').send({
         username: 'typicalUser',
         password: 'weakpassword',
       });
@@ -44,7 +44,7 @@ describe('Authorization', () => {
     });
 
     it('should return a 200 and a token when a user is authorized as an admin', async () => {
-      const userRes = await request(app).post('/user').send({
+      const userRes = await request(app).post('/auth/user').send({
         username: 'typicalUser',
         password: 'weakpassword',
       });
@@ -55,7 +55,7 @@ describe('Authorization', () => {
       const adminUser = userRes.body.data;
       const adminAccessToken = await getUserAccessToken(adminUser.id);
 
-      const newWouldbeAdmin = await request(app).post('/user').send({
+      const newWouldbeAdmin = await request(app).post('/auth/user').send({
         username: 'newAdmin',
         password: 'adminPassword',
       });
@@ -75,7 +75,7 @@ describe('Authorization', () => {
 describe('Characters', () => {
   describe('POST /admin/characters', () => {
     it('should return a 401 when a user is not authorized as an admin', async () => {
-      const createUserRes = await request(app).post('/user').send({
+      const createUserRes = await request(app).post('/auth/user').send({
         username: 'typicalUser',
         password: 'weakpassword',
       });
@@ -95,7 +95,7 @@ describe('Characters', () => {
     });
 
     it('should return a 200 when a user is authorized as an admin', async () => {
-      const createUserRes = await request(app).post('/user').send({
+      const createUserRes = await request(app).post('/auth/user').send({
         username: 'typicalUser',
         password: 'weakpassword',
       });
@@ -124,7 +124,7 @@ describe('Characters', () => {
     });
 
     it('should return a 409 when a character already exists', async () => {
-      const userResponse = await request(app).post('/user').send({
+      const userResponse = await request(app).post('/auth/user').send({
         username: 'typicalUser',
         password: 'weakpassword',
       });
@@ -166,7 +166,7 @@ describe('Characters', () => {
   });
   describe('PATCH /admin/characters/:id', () => {
     it('should update a character', async () => {
-      const userResponse = await request(app).post('/user').send({
+      const userResponse = await request(app).post('/auth/user').send({
         username: 'adminUser',
         password: 'adminPassword',
       });
@@ -205,7 +205,7 @@ describe('Characters', () => {
     });
 
     it('should return a 401 when a user is not authorized as an admin', async () => {
-      const userResponse = await request(app).post('/user').send({
+      const userResponse = await request(app).post('/auth/user').send({
         username: 'typicalUser',
         password: 'weakpassword',
       });
@@ -227,7 +227,7 @@ describe('Characters', () => {
 
   describe('DELETE /admin/characters/:id', () => {
     it('should return a 401 when a user is not authorized as an admin', async () => {
-      const userResponse = await request(app).post('/user').send({
+      const userResponse = await request(app).post('/auth/user').send({
         username: 'typicalUser',
         password: 'weakpassword',
       });
@@ -269,7 +269,7 @@ describe('Characters', () => {
     });
 
     it('should return a 200 and success message when a user is authorized as an admin', async () => {
-      const userResponse = await request(app).post('/user').send({
+      const userResponse = await request(app).post('/auth/user').send({
         username: 'typicalUser',
         password: 'weakpassword',
       });
@@ -313,7 +313,7 @@ describe('Characters', () => {
 describe('Organizations', () => {
   describe('POST /admin/organizations', () => {
     it('should return a 401 when a user is not authorized as an admin', async () => {
-      const userResponse = await request(app).post('/user').send({
+      const userResponse = await request(app).post('/auth/user').send({
         username: 'typicalUser',
         password: 'weakpassword',
       });
@@ -330,7 +330,7 @@ describe('Organizations', () => {
     });
 
     it('should return a 200 when a user is authorized as an admin', async () => {
-      const userResponse = await request(app).post('/user').send({
+      const userResponse = await request(app).post('/auth/user').send({
         username: 'adminUser',
         password: 'adminPassword',
       });
@@ -356,7 +356,7 @@ describe('Organizations', () => {
 
   describe('PATCH /admin/organizations/:id', () => {
     it('should return a 401 when a user is not authorized as an admin', async () => {
-      const userResponse = await request(app).post('/user').send({
+      const userResponse = await request(app).post('/auth/user').send({
         username: 'typicalUser',
         password: 'weakpassword',
       });
@@ -374,7 +374,7 @@ describe('Organizations', () => {
     });
 
     it('should patch an organizations data', async () => {
-      const userResponse = await request(app).post('/user').send({
+      const userResponse = await request(app).post('/auth/user').send({
         username: 'adminUser',
         password: 'adminPassword',
       });
@@ -411,7 +411,7 @@ describe('Organizations', () => {
     });
 
     it('should return a 404 when an organization does not exist', async () => {
-      const userResponse = await request(app).post('/user').send({
+      const userResponse = await request(app).post('/auth/user').send({
         username: 'adminUser',
         password: 'adminPassword',
       });
@@ -436,7 +436,7 @@ describe('Organizations', () => {
   });
   describe('DELETE /admin/organizations/:id', () => {
     it('should return a 401 when a user is not authorized as an admin', async () => {
-      const userResponse = await request(app).post('/user').send({
+      const userResponse = await request(app).post('/auth/user').send({
         username: 'adminUser',
         password: 'adminPassword',
       });
@@ -470,7 +470,7 @@ describe('Organizations', () => {
     });
 
     it('should return a 200 and success message', async () => {
-      const userResponse = await request(app).post('/user').send({
+      const userResponse = await request(app).post('/auth/user').send({
         username: 'adminUser',
         password: 'adminPassword',
       });
@@ -502,7 +502,7 @@ describe('Organizations', () => {
     });
 
     it('should return a 404 when an organization does not exist', async () => {
-      const userResponse = await request(app).post('/user').send({
+      const userResponse = await request(app).post('/auth/user').send({
         username: 'adminUser',
         password: 'adminPassword',
       });
@@ -526,7 +526,7 @@ describe('Organizations', () => {
 describe('Hacks', () => {
   describe('POST /admin/hacks', () => {
     it('should return a 401 when a user is not authorized as an admin', async () => {
-      const userResponse = await request(app).post('/user').send({
+      const userResponse = await request(app).post('/auth/user').send({
         username: 'typicalUser',
         password: 'weakpassword',
       });
@@ -543,7 +543,7 @@ describe('Hacks', () => {
     });
 
     it('should successfully create a new hack', async () => {
-      const createUserRes = await request(app).post('/user').send({
+      const createUserRes = await request(app).post('/auth/user').send({
         username: 'test',
         password: 'test',
       });
@@ -562,7 +562,7 @@ describe('Hacks', () => {
     });
 
     it('Should not allow two hacks with the same title', async () => {
-      const userRes = await request(app).post('/user').send({
+      const userRes = await request(app).post('/auth/user').send({
         username: 'test',
         password: 'test',
       });
@@ -599,7 +599,7 @@ describe('Hacks', () => {
   });
   describe('PATCH /admin/hacks/:id', () => {
     it('Should return a 401 for non-admin users', async () => {
-      const userRes = await request(app).post('/user').send({
+      const userRes = await request(app).post('/auth/user').send({
         username: 'test',
         password: 'test',
       });
@@ -638,7 +638,7 @@ describe('Hacks', () => {
     });
 
     it('Should update a hack', async () => {
-      const userRes = await request(app).post('/user').send({
+      const userRes = await request(app).post('/auth/user').send({
         username: 'test',
         password: 'test',
       });
@@ -674,7 +674,7 @@ describe('Hacks', () => {
     });
 
     it('Should return a 404 for a non-existent hack', async () => {
-      const userRes = await request(app).post('/user').send({
+      const userRes = await request(app).post('/auth/user').send({
         username: 'test',
         password: 'test',
       });
@@ -694,7 +694,7 @@ describe('Hacks', () => {
     });
 
     it('Should add a contributor to a hack', async () => {
-      const userRes = await request(app).post('/user').send({
+      const userRes = await request(app).post('/auth/user').send({
         username: 'test',
         password: 'test',
       });
@@ -753,7 +753,7 @@ describe('Hacks', () => {
   });
   describe('DELETE /admin/hacks/:id', () => {
     it('Should return a 401 status for non-admin users', async () => {
-      const userRes = await request(app).post('/user').send({
+      const userRes = await request(app).post('/auth/user').send({
         username: 'test',
         password: 'test',
       });
@@ -788,7 +788,7 @@ describe('Hacks', () => {
     });
 
     it('Should return a 200 status and success message', async () => {
-      const userRes = await request(app).post('/user').send({
+      const userRes = await request(app).post('/auth/user').send({
         username: 'test',
         password: 'test',
       });

@@ -12,7 +12,7 @@ describe('GET /api/v1/hacks', () => {
   });
 
   it('should return a 200 status and all hacks', async () => {
-    const userRes = await request(app).post('/user').send({
+    const userRes = await request(app).post('/auth/user').send({
       username: 'test',
       password: 'test',
     });
@@ -58,7 +58,7 @@ describe('GET /api/v1/hacks', () => {
 
 describe('GET /api/v1/hacks/:id', () => {
   it('should return a 200 status and a hack', async () => {
-    const userRes = await request(app).post('/user').send({
+    const userRes = await request(app).post('/auth/user').send({
       username: 'test',
       password: 'test',
     });

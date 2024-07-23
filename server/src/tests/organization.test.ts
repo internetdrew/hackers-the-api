@@ -19,7 +19,7 @@ const cyberdelia = {
 
 describe('GET /api/v1/organizations', () => {
   it('should return a 200 and an array of organizations', async () => {
-    const userResponse = await request(app).post('/user').send({
+    const userResponse = await request(app).post('/auth/user').send({
       username: 'adminX',
       password: 'passwordX',
     });
@@ -54,7 +54,7 @@ describe('GET /api/v1/organizations', () => {
 
 describe('GET /api/v1/organizations/:id', () => {
   it('should return a 200 and an organization', async () => {
-    const userResponse = await request(app).post('/user').send({
+    const userResponse = await request(app).post('/auth/user').send({
       username: 'adminY',
       password: 'password',
     });

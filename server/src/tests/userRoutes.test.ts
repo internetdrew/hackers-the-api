@@ -4,7 +4,7 @@ import app from '../server';
 
 describe('POST /user', () => {
   it('should return a 200 and user info when a user is created', async () => {
-    const res = await request(app).post('/user').send({
+    const res = await request(app).post('/auth/user').send({
       username: 'test_user_X',
       password: 'password',
     });
@@ -15,11 +15,11 @@ describe('POST /user', () => {
   });
 
   it('should return a 409 when a user already exists', async () => {
-    await request(app).post('/user').send({
+    await request(app).post('/auth/user').send({
       username: 'test_user_X',
       password: 'password',
     });
-    const userX2 = await request(app).post('/user').send({
+    const userX2 = await request(app).post('/auth/user').send({
       username: 'test_user_X',
       password: 'password2',
     });
@@ -27,7 +27,7 @@ describe('POST /user', () => {
   });
 
   it('should respond with error message for each missing value', async () => {
-    const res = await request(app).post('/user').send({});
+    const res = await request(app).post('/auth/user').send({});
     expect(res.status).toBe(400);
     expect(res.body.errors).toHaveLength(2);
   });
@@ -35,11 +35,11 @@ describe('POST /user', () => {
 
 describe('POST /login', () => {
   it('should return a 200 and a token when a user logs in', async () => {
-    await request(app).post('/user').send({
+    await request(app).post('/auth/user').send({
       username: 'typicalUser',
       password: 'weakpassword123',
     });
-    const response = await request(app).post('/login').send({
+    const response = await request(app).post('/auth/login').send({
       username: 'typicalUser',
       password: 'weakpassword123',
     });
@@ -50,11 +50,11 @@ describe('POST /login', () => {
   });
 
   it('should return a 401 when a user logs in with invalid credentials', async () => {
-    await request(app).post('/user').send({
+    await request(app).post('/auth/user').send({
       username: 'typicalUser',
       password: 'weakpassword 123',
     });
-    const response = await request(app).post('/login').send({
+    const response = await request(app).post('/auth/login').send({
       username: 'typicalUser',
       password: 'wrongpassword',
     });
@@ -63,7 +63,7 @@ describe('POST /login', () => {
   });
 
   it('should respond with error message for each missing value', async () => {
-    const res = await request(app).post('/login').send({});
+    const res = await request(app).post('/auth/login').send({});
     expect(res.status).toBe(400);
     expect(res.body.errors).toHaveLength(2);
   });

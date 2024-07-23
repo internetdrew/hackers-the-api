@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import request from 'supertest';
 import app from '../server';
-import prisma from '../db';
 import { getUserAccessToken, updateUserRole } from './helpers';
 
 const dade = {
@@ -22,7 +21,7 @@ const kate = {
 
 describe('GET /api/v1/characters', () => {
   it('should return a 200 and an array of characters', async () => {
-    const userResponse = await request(app).post('/user').send({
+    const userResponse = await request(app).post('/auth/user').send({
       username: 'adminX',
       password: 'passwordX',
     });
@@ -58,7 +57,7 @@ describe('GET /api/v1/characters', () => {
 
 describe('GET /api/v1/characters/:id', () => {
   it('should return a 200 and a character by id', async () => {
-    const userResponse = await request(app).post('/user').send({
+    const userResponse = await request(app).post('/auth/user').send({
       username: 'user123',
       password: 'password123',
     });
