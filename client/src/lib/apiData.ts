@@ -45,13 +45,13 @@ const apiData = [
     options: [
       {
         method: "GET",
-        endpoint: "/api/v1/oranizations",
-        description: "returns a list of organizations.",
+        endpoint: "/api/v1/hacks",
+        description: "returns a list of hacks.",
       },
       {
         method: "GET",
-        endpoint: "/api/v1/oranizations/:id",
-        description: "returns information on a specific organization.",
+        endpoint: "/api/v1/hacks/:id",
+        description: "returns information on a specific hack.",
       },
     ],
   },
@@ -60,13 +60,13 @@ const apiData = [
     options: [
       {
         method: "GET",
-        endpoint: "/api/v1/oranizations",
-        description: "Returns a list of organizations.",
+        endpoint: "/api/v1/quotes",
+        description: "Returns a list of famous quotes.",
       },
       {
         method: "GET",
-        endpoint: "/api/v1/oranizations/:id",
-        description: "Returns information on a specific organization.",
+        endpoint: "/api/v1/quotes/:id",
+        description: "Returns a specific quote.",
       },
     ],
   },
