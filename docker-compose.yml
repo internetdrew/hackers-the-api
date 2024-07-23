@@ -5,6 +5,8 @@ services:
     restart: unless-stopped
     build:
       context: ./client
+      args:
+        PUBLIC_API_URL: ${PUBLIC_API_URL:-http://localhost:3000}
     ports:
       - '4321:4321'
     volumes:
